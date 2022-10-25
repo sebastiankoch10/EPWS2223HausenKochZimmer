@@ -1,7 +1,7 @@
 ToDos
 Exposé bis Montag im Repro haben
-Betreuer hinzufügen im repro: Mirjam Blümm(mbluemm) Uwe Müsse(umuesse) Simon Schulte(slschulte)
 Alle Anderen Ideen ins Repro
+Begründung ausgewählte Idee:
 
 Ausgewählte Idee: Gummersbach Historische Infos [aged creed Grummersbach]
 
