@@ -1,10 +1,13 @@
 ToDos
 Exposé bis Montag im Repro haben
 Betreuer hinzufügen im repro: Mirjam Blümm(mbluemm) Uwe Müsse(umuesse) Simon Schulte(slschulte)
+Alle Anderen Ideen ins Repro
+
+Ausgewählte Idee: Gummersbach Historische Infos [aged creed Grummersbach]
 
 
 
-Expose [https://ilias.th-koeln.de/goto.php?target=git_16843]
+Expose [https://ilias.th-koeln.de/goto.php?target=git_16843] /https://ilias.th-koeln.de/ilias.php?ref_id=1452264&obj_id=39898&cmd=layout&cmdClass=illmpresentationgui&cmdNode=fz&baseClass=ilLMPresentationGUI
     Darstellung des Problemraums
     Zielsetzung / Vision
     gesellschaftliche, wissenschaftliche und/oder wirtschaftliche Relevanz
@@ -41,4 +44,6 @@ gummersbach wikipedia
 seite der stadt
 https://www.archive.nrw.de/kreisarchiv-rheinisch-bergischer-kreis/der-rheinisch-bergische-kreis-und-seine-geschichte
 
-mittelalterliche KArten vom Bergischen existieren
+mittelalterliche Karten vom Bergischen existieren
+
+
