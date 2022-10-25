@@ -1,7 +1,7 @@
 ToDos
 Exposé bis Montag im Repro haben
-Betreuer hinzufügen: Mirjam Blümm(mbluemm) Uwe Müsse(umuesse) Simon Schulte(slschulte)
-Gitrep
+Betreuer hinzufügen im repro: Mirjam Blümm(mbluemm) Uwe Müsse(umuesse) Simon Schulte(slschulte)
+
 
 
 Expose [https://ilias.th-koeln.de/goto.php?target=git_16843]
@@ -36,4 +36,9 @@ https://www.bezreg-koeln.nrw.de/brk_internet/geobasis/topographische_karten/hist
 https://rio.obk.de/Service/historischekarten.php
 -historische Karten Oberberg, Landrat 
 
+Geschichte
+gummersbach wikipedia
+seite der stadt
+https://www.archive.nrw.de/kreisarchiv-rheinisch-bergischer-kreis/der-rheinisch-bergische-kreis-und-seine-geschichte
 
+mittelalterliche KArten vom Bergischen existieren
