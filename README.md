@@ -1,11 +1,11 @@
 # EPWS2223HausenKochZimmer
 Entwicklungsprojekt 22/23
 
-##Aktuelles Expose
+## Aktuelles Expose
 
 Das Expose wurde von Philipp nach der Recherche mit entsprechenden Ergänzungen versehen, die Zusammenführung ist geplant.
 
-###Darstellung des Problemraums
+### Darstellung des Problemraums
 
 [Sebastian]
 Heutzutage gibt es wenig Möglichkeiten, digital mit alten Karten von Städten zu interagieren. Falls solche Karten vorliegen, ist es jedoch meist nur ein Bild und dem Nutzer ist es meist nicht möglich genau zu erkennen, was geschichtlich bedeutende Orte oder Gebäude auf der Karte sind. Des Weiteren ist es auch schwer nachzuvollziehen, wie sich diese Orte bzw. Gebäude im Verlauf der Zeit verändert haben, so ist es für einen geschichtsinteressierten Menschen schwierig, anhand alter Karten sich selbst Wissen anzueignen oder zu erweitern.
@@ -18,7 +18,7 @@ Die Darstellung von historischen Daten aus der näheren Umgebung ist meist nur f
 
 Neben den Langjährigen Bewohnern der Städte Köln/Gummersbach sind ortsfremde wie Studenten oder Touristen mögliche User.
 
-###Zielsetzung / Vision
+### Zielsetzung / Vision
 
 [Sebastian]
 Idee ist es nun, dem Nutzer eine Möglichkeit zu schaffen, sich geschichtliches Wissen über bestimmte Orte und den darin verbundenen Gebäuden anzueignen und das erworbene Wissen zu verfestigen. Dies soll erfolgen, indem man eine alte Karte virtuell ablaufen kann und bei bestimmten bedeutenden Punkten sich entsprechende Informationen durchlesen kann. Auch soll man von der jeweiligen alten Karte einen Vergleich zu einer neuen Karte sehen können (?).
@@ -28,7 +28,7 @@ Nachdem man eine Karte erkundet hat, soll man das Gelernte in Form eines Quiz (?
 Die Veränderung des Objektes in der Stadt soll möglichst durch eine bildliche Darstellung verdeutlicht werden.
 Die Software könnte durch Gamification Systeme das Lernen fördern.
 
-###Relevanz
+### Relevanz
 
 [Sebastian]
 Relevanz, weil keine vergleichbare Plattform besteht (?).
@@ -40,7 +40,7 @@ Bietet einen wissen orientierten Mehrwert durch das Vermitteln von historischem 
 
 
 
-##ToDos
+## ToDos
 Exposé bis Montag im Repro haben
 Alle Anderen Ideen ins Repro
 Begründung ausgewählte Idee:
@@ -51,7 +51,7 @@ Ausgewählte Idee: Gummersbach Historische Infos [aged creed Grummersbach]
 
 
 
-##Recherche
+## Recherche
 
 Stadt Führungsapps
 https://www.mydays.de/geschenkidee/digitale-stadtfuehrungen-koeln
