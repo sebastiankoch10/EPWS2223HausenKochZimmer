@@ -42,19 +42,13 @@ Bietet einen wissen orientierten Mehrwert durch das Vermitteln von historischem 
 
 ## ToDos
 * Projektplan(Deliverables für Audit 1) und (Zeitplan)
-* Festlegung der Deliverables/ Artefakte/ Themen für Audit 1
-- Problemstellung und Herleitung der Zielsetzung
-- Zielsetzungen sowie Begründung des Vorgehens zur Erreichung dieser
-- Erläuterung der Abwägung der gewählten Methoden im Vorgehen
-- ggf. erste Modellierungen und Modellierungsbegründungen
-Beispiele für Artefakte: Domänenmodell, Zielhierarchie, Projektplan, Alleinstellungsmerkmale, erste Risiken, Spezifikation des ersten technischen/architekturellen Proof-of-Concepts (PoC), ...
-Deliverables für den 2. Audit (Projektplan)
-
-
-
-Ausgewählte Idee: Gummersbach Historische Infos [aged creed Grummersbach]
-
-
+* Festlegung der Deliverables/ Artefakte/ Themen für Audit 1:
+  - Problemstellung und Herleitung der Zielsetzung
+  - Zielsetzungen sowie Begründung des Vorgehens zur Erreichung dieser
+  - Erläuterung der Abwägung der gewählten Methoden im Vorgehen
+  - ggf. erste Modellierungen und Modellierungsbegründungen
+    Beispiele für Artefakte: Domänenmodell, Zielhierarchie, Projektplan, Alleinstellungsmerkmale, erste Risiken, Spezifikation des ersten       technischen/architekturellen Proof-of-Concepts (PoC), ...
+  - Deliverables für den 2. Audit (Projektplan)
 
 
 
