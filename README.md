@@ -23,5 +23,5 @@ Es soll ein System entwickelt werden, das Bewohnern die Möglichkeit gibt, Bildm
 
 ### Relevanz
 
-Schließt die Wissenslücke über das Erscheinungsbild der Stadt Gummersbach bei den Bürgern und Besuchern. Das Ansammeln der “Familienfotos” vertieft die Stadtgeschichte.
+Schließt die Wissenslücke über das Erscheinungsbild der Stadt Gummersbach bei den Bürgern und Besuchern. Das Ansammeln der “Familienfotos” vertieft die Stadtgeschichte und trägt durch das Hervorbringen von neuem Material auch geschichtwissenschaftliche Relevanz.
 
