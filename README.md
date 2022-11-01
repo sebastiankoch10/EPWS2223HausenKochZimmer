@@ -1,85 +1,27 @@
 # EPWS2223HausenKochZimmer
 Entwicklungsprojekt 22/23
+Betreuer: Mirjam Blümm, Uwe Müsse, Simon Schulte
 
 ## Aktuelles Expose
 
-Das Expose wurde von Philipp nach der Recherche mit entsprechenden Ergänzungen versehen, die Zusammenführung ist geplant.
-
 ### Darstellung des Problemraums
 
-[Sebastian]
-Heutzutage gibt es wenig Möglichkeiten, digital mit alten Karten von Städten zu interagieren. Falls solche Karten vorliegen, ist es jedoch meist nur ein Bild und dem Nutzer ist es meist nicht möglich genau zu erkennen, was geschichtlich bedeutende Orte oder Gebäude auf der Karte sind. Des Weiteren ist es auch schwer nachzuvollziehen, wie sich diese Orte bzw. Gebäude im Verlauf der Zeit verändert haben, so ist es für einen geschichtsinteressierten Menschen schwierig, anhand alter Karten sich selbst Wissen anzueignen oder zu erweitern.
+Für einige kleine Städte und Ortschaften gibt es nur wenige Möglichkeiten, sich über die Stadtgeschichte im Netz zu informieren. Meist gibt es nur einen Wikipedia Eintrag sowie eine Webpage auf der städtischen Website. In beiden Fällen wird die Information geringfügig mit Bildern unterstützt und es fehlt oft der Kontext zu den vorhandenen Bildern, wie z.B. wo ein gezeigtes Gebäude stand oder sogar noch steht. Es ist demnach schwer sich ein Bild davon zu machen, wie das Stadtbild zu bestimmten Zeiten ausgesehen hat. (https://www.gummersbach.de/de/hier-zu-hause/stadtgeschichte.html)
 
-[Philipp]
-Die Darstellung von historischen Daten anhand von Karten für eine Stadt wie Gummersbach ist leider nicht realistisch. Die Karten der Region Bergisches Land lassen sich bis 1795 zurückdatieren, jedoch gibt es keine Stätischen Karten der Stadt Gummersbach, welche in unsere Recherche aufgefunden wurden. Gegebenenfalls können die graphische Darstellung der historischen Daten einzelnen Interessanten Objekten zugeordnet werden. Köln!
+Außerdem gibt es nur begrenzt Kartenmaterial aus früheren Jahrzehnten. Bleibt man an dem Beispiel Gummersbach gibt es nur Karten der gesamten rheinländischen/westfälischen Region, die bis 1795 zurückgehen. Karten der oberbergischen Region oder gar Stadtkarten gibt es nicht. (https://rio.obk.de/mapbender3/app.php/application/RIO_Hist_Karten?#75000@7.59760/51.03487r0@EPSG:25832)
 
-Die Darstellung einer Karte als Grundlage ist zu diskutieren.
-Die Darstellung von historischen Daten aus der näheren Umgebung ist meist nur für sehr Interessierte Kenner zugänglich. Die Daten befinden sich in separaten Quellen und gegebenenfalls sind diese nicht bekannt. 
+Vieles historisches Material liegt analog bei Heimatvereinen, Heimatmuseen oder bei Bewohnern der Stadt Gummersbach. Die Digitalisierung an einer gesammelten Stelle wird geringfügig durchgeführt.
 
-Neben den Langjährigen Bewohnern der Städte Köln/Gummersbach sind ortsfremde wie Studenten oder Touristen mögliche User.
+
 
 ### Zielsetzung / Vision
 
-[Sebastian]
-Idee ist es nun, dem Nutzer eine Möglichkeit zu schaffen, sich geschichtliches Wissen über bestimmte Orte und den darin verbundenen Gebäuden anzueignen und das erworbene Wissen zu verfestigen. Dies soll erfolgen, indem man eine alte Karte virtuell ablaufen kann und bei bestimmten bedeutenden Punkten sich entsprechende Informationen durchlesen kann. Auch soll man von der jeweiligen alten Karte einen Vergleich zu einer neuen Karte sehen können (?).
-Nachdem man eine Karte erkundet hat, soll man das Gelernte in Form eines Quiz (?) wiedergeben können.
-[Philipp]
+Es soll ein System entwickelt werden, das Bewohnern die Möglichkeit gibt, Bildmaterial hochzuladen und zeit- sowie ortsbezogen einzuordnen. Hierdurch soll eine Bilder- und Wissenssammlung über eine bestimmte Ortschaft aufgebaut werden. Die Motivation, an diesem Vorhaben teilzunehmen, soll für die Bewohner aus sozialem Hintergrund durch den kollaborativen Vorgang entstehen. Dies soll durch Gamification unterstützt werden. 
 
-Die Veränderung des Objektes in der Stadt soll möglichst durch eine bildliche Darstellung verdeutlicht werden.
-Die Software könnte durch Gamification Systeme das Lernen fördern.
+
+
 
 ### Relevanz
 
-[Sebastian]
-Relevanz, weil keine vergleichbare Plattform besteht (?).
-Tourismus (vielleicht in Gummersbach, dann auch wirtschaftlich vielleicht relevant)
-
-[Philipp]
-Bietet einen wissen orientierten Mehrwert durch das Vermitteln von historischem Wissen für die Bürger und Besucher der Stadt Gummersbach/Köln.
-
-
-
-
-## ToDos
-* Projektplan(Deliverables für Audit 2)
-* Projektplan überarbeiten
-* Projektplan durchführen
-* Gummerbach/Köln
-* ToDos überdenken
-* ToDos verteilen
-
-
-
-## Recherche
-
-Stadt Führungsapps
-https://www.mydays.de/geschenkidee/digitale-stadtfuehrungen-koeln
--9,90€
--führt an unbekanntere und bekanntere Kölner Orte
--zielpunkt per e-mail
--rätsel lösen für fortschritt
--Safari-Regionalliga-Tabelle zum vergleichen
-https://www.digiwalk.de/
--eigene Touren erstellen
-https://www.stadtfuehrungen-digital.de/
--Bamberg per app
-https://www.rheda-wiedenbrueck.de/kunst-kultur/flora-westfalica/tourismus/stadtfuehrungen/digitale-stadtfuehrung/
--führungen per app
-
-Alte Karten
-https://maps.arcanum.com/de/
--verkauft alte karten, WMTS Service
-https://www.bezreg-koeln.nrw.de/brk_internet/geobasis/topographische_karten/historisch/index.html
--1795-gegenwart, nochmal anschauen
-https://rio.obk.de/Service/historischekarten.php
--historische Karten Oberberg, Landrat 
-
-Geschichte
-gummersbach wikipedia
-seite der stadt
-https://www.archive.nrw.de/kreisarchiv-rheinisch-bergischer-kreis/der-rheinisch-bergische-kreis-und-seine-geschichte
-
-mittelalterliche Karten vom Bergischen existieren
-
-
+Schließt die Wissenslücke über das Erscheinungsbild der Stadt Gummersbach bei den Bürgern und Besuchern. Das Ansammeln der “Familienfotos” vertieft die Stadtgeschichte und trägt durch das Hervorbringen von neuem Material auch geschichtwissenschaftliche Relevanz.
 
