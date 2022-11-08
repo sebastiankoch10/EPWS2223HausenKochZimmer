@@ -1,0 +1,18 @@
+Risiken Softwareentwicklung
+Qualitätssicherung
+Kompexität wird unterschätzt
+Anforderungsmanagment ungenügende analyse
+Bugs
+wieder kehrende Bugs
+Code Verlust
+Code Änderungen nicht nachvollziebar
+Doppelte Bug fixes
+Falsche Absprachen bei Code proggen
+inkonsistente Dku
+Zeitplan nicht einhalten
+Falsche Funktionen/library
+Falsche Schnittstelle
+Neue unbekannte Tools
+Unbekannte Architektur
+Kommunikationsfehler
+Projekt umfang/ schleichende Vermehrung
