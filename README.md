@@ -15,13 +15,7 @@ Vieles historisches Material liegt analog bei Heimatvereinen, Heimatmuseen oder 
 
 
 ### Zielsetzung / Vision
-
-Es soll ein System entwickelt werden, das Bewohnern die Möglichkeit gibt, Bildmaterial hochzuladen und zeit- sowie ortsbezogen einzuordnen. Hierdurch soll eine Bilder- und Wissenssammlung über eine bestimmte Ortschaft aufgebaut werden. Die Motivation, an diesem Vorhaben teilzunehmen, soll für die Bewohner aus sozialem Hintergrund durch den kollaborativen Vorgang entstehen. Dies soll durch Gamification unterstützt werden. 
-
-
-
+Es soll ein System entwickelt werden, das Benutzern die Möglichkeit gibt, Bildmaterial und Erzählungen hochzuladen und zeit- sowie ortsbezogen einzuordnen. Hierdurch soll eine Bild/Text- und Wissenssammlung über eine bestimmte Ortschaft aufgebaut werden, welche von Nutzern als Art Wiki genutzt werden kann und als fördernden Aspekt für die Heimatpflege dienen soll. Die Motivation, an diesem Vorhaben teilzunehmen, soll für die Bewohner aus sozialem Hintergrund durch den kollaborativen Vorgang entstehen. Dies soll durch Gamification unterstützt werden.
 
 ### Relevanz
-
-Schließt die Wissenslücke über das Erscheinungsbild der Stadt Gummersbach bei den Bürgern und Besuchern. Das Ansammeln der “Familienfotos” vertieft die Stadtgeschichte und trägt durch das Hervorbringen von neuem Material auch geschichtwissenschaftliche Relevanz.
-
+Schließt die Wissenslücke über das Erscheinungsbild und Historie einer kleiner bis mittelgroßen Stadt bei den Bürgern und Besuchern. Das Ansammeln der “Familienfotos” und interessanten Erzählungen vertieft die Stadtgeschichte und trägt durch das Hervorbringen von neuem Material auch geschichtwissenschaftliche Relevanz.
