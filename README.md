@@ -15,7 +15,12 @@ Vieles historisches Material liegt analog bei Heimatvereinen, Heimatmuseen oder 
 
 
 ### Zielsetzung / Vision
-Es soll ein System entwickelt werden, das Benutzern die Möglichkeit gibt, Bildmaterial und Erzählungen hochzuladen und zeit- sowie ortsbezogen einzuordnen. Hierdurch soll eine Bild/Text- und Wissenssammlung über eine bestimmte Ortschaft aufgebaut werden, welche von Nutzern als Art Wiki genutzt werden kann und als fördernden Aspekt für die Heimatpflege dienen soll. Die Motivation, an diesem Vorhaben teilzunehmen, soll für die Bewohner aus sozialem Hintergrund durch den kollaborativen Vorgang entstehen. Dies soll durch Gamification unterstützt werden.
+Es soll ein System entwickelt werden, das Benutzern die Möglichkeit gibt, Bildmaterial und Erzählungen hochzuladen und zeit- sowie ortsbezogen einzuordnen. Hierdurch soll eine Bild/Text- und Wissenssammlung über eine bestimmte Ortschaft aufgebaut werden, welche von Nutzern als Art Wiki genutzt werden kann und als fördernden Aspekt für die Heimatpflege dienen soll. 
+
+Die Motivation, an diesem Vorhaben teilzunehmen soll durch ein persönliches Interesse des einzelnen Nutzers sein, ob es nun das Interesse ist, etwas über eine Stadt zu erfahren oder Eigenes über eine Stadt zu teilen. 
+
+Das System soll eine Community erschaffen, für geschichtsinteressierte oder heimatsverbundene Menschen, um miteinander in Kontakt zu treten, zu bleiben und sich auszutauschen.
+
 
 ### Relevanz
-Schließt die Wissenslücke über das Erscheinungsbild und Historie einer kleiner bis mittelgroßen Stadt bei den Bürgern und Besuchern. Das Ansammeln der “Familienfotos” und interessanten Erzählungen vertieft die Stadtgeschichte und trägt durch das Hervorbringen von neuem Material auch geschichtwissenschaftliche Relevanz.
+Schließt die Wissenslücke über das Erscheinungsbild und Historie einer kleiner bis mittelgroßen Stadt bei den Bürgern und Besuchern. Das Ansammeln der “Familienfotos” und interessanten Erzählungen vertieft die Stadtgeschichte und trägt 
