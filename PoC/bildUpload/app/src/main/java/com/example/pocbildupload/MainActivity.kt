@@ -15,10 +15,14 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import com.example.pocbildupload.databinding.ActivityMainBinding
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+
 import org.json.JSONObject
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
+import com.google.gson.Gson
+import java.io.*
+import java.lang.Exception
+import java.nio.charset.Charset
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,24 +51,44 @@ class MainActivity : AppCompatActivity() {
             val bitmap = (drawable as BitmapDrawable).bitmap
             //convert Base64 String
             val outputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG,100,outputStream)
-            val encodedImage = Base64.encodeToString(outputStream.toByteArray(),Base64.DEFAULT)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            val encodedImage = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
             //convert to JSON
             val jsonObject = JSONObject()
-            jsonObject.put("outputPic",encodedImage)
+            jsonObject.put("outputPic", encodedImage)
             //jsonObject.put("outputPic","Test")
+            //write jason or override
             //schreiben
             try {
-                val file = File("D:\\Program Files (x86)\\EPWS2223HausenKochZimmer\\PoC\\bildUpload\\app\\src\\test\\picConvertTest\\outputPic.json")
+                val file =
+                    File("D:\\Program Files (x86)\\EPWS2223HausenKochZimmer\\PoC\\bildUpload\\app\\src\\test\\picConvertTest\\outputPic.json")
+                if (!file.exists()) {
+                    val objectMapper = ObjectMapper().registerModule(KotlinModule())
+                    objectMapper.writeValue(
+                        File("D:\\Program Files (x86)\\EPWS2223HausenKochZimmer\\PoC\\bildUpload\\app\\src\\test\\picConvertTest"),
+                        jsonObject
+                    )
+                }
+                if (file.exists()) {
+                    file.writeText("")
+                }
                 val fileOutputStream = FileOutputStream(file)
                 fileOutputStream.write(jsonObject.toString().toByteArray())
-                fileOutputStream.close()
-            } catch (e: java.lang.Exception) {
+                PrintWriter(FileWriter(file.path)).use {
+                    val gson = Gson()
+                    val jsonString = gson.toJson(fileOutputStream)
+                    it.write(jsonString)
+                }
+                fileOutputStream.close() //TODO
+
+
+            } catch (e: Exception) {
                 TODO()
             }
             TODO()// Leeres JSON ERSTELLEN oder leeren
 
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
