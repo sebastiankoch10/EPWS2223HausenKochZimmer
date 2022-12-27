@@ -1,6 +1,10 @@
 package com.example.pocbildupload
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.util.Base64
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -9,7 +13,12 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.content.ContextCompat
 import com.example.pocbildupload.databinding.ActivityMainBinding
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,9 +38,25 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-            
+            //lesen
+            val drawable = ContextCompat.getDrawable(this, R.drawable.muensterplatz_freiburg)
+            val test = drawable.toString()
+            Snackbar.make(view, test, Snackbar.LENGTH_LONG)
+                .setAction("fehler", null).show()
+            //convert bitmap (JPG?)
+            val bitmap = (drawable as BitmapDrawable).bitmap
+            //convert Base64 String
+            val outputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,outputStream)
+            val encodedImage = Base64.encodeToString(outputStream.toByteArray(),Base64.DEFAULT)
+            //convert to JSON
+            val jsonObject = JSONObject()
+            jsonObject.put("outputPic",encodedImage)
+            //schreiben
+            val file = File(getExternalFilesDir(null), "outputPic.json")
+            val fileOutputStream = FileOutputStream(file)
+            fileOutputStream.write(jsonObject.toString().toByteArray())
+            fileOutputStream.close()
         }
     }
 

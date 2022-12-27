@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PoCBildUpload"
         tools:targetApi="31">
+    <!--android:iconUploadPic="@drawable/muensterplatz_freiburg"
+android:labelUploadPic="@string/app_name"
+    android:roundIconUploadPic="@mipmap/ic_launcher_round"
+    android:supportsRtlUploadPic="true"
+    android:themeUploadPic="@style/Theme.PoCBildUploadUploadPic" -->
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
