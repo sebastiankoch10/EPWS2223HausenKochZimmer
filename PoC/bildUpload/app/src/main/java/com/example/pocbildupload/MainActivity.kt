@@ -16,6 +16,7 @@ import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import com.example.pocbildupload.databinding.ActivityMainBinding
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 
 import org.json.JSONObject
@@ -62,16 +63,23 @@ class MainActivity : AppCompatActivity() {
             try {
                 val file =
                     File("D:\\Program Files (x86)\\EPWS2223HausenKochZimmer\\PoC\\bildUpload\\app\\src\\test\\picConvertTest\\outputPic.json")
-                if (!file.exists()) {
-                    val objectMapper = ObjectMapper().registerModule(KotlinModule())
-                    objectMapper.writeValue(
-                        File("D:\\Program Files (x86)\\EPWS2223HausenKochZimmer\\PoC\\bildUpload\\app\\src\\test\\picConvertTest"),
-                        jsonObject
-                    )
-                }
                 if (file.exists()) {
                     file.writeText("")
                 }
+                if (!file.exists()) {
+                    val objectMapper = ObjectMapper().registerModule(
+                        KotlinModule.Builder()
+                            .withReflectionCacheSize(512)
+                            .configure(KotlinFeature.NullToEmptyCollection, false)
+                            .configure(KotlinFeature.NullToEmptyMap, false)
+                            .configure(KotlinFeature.NullIsSameAsDefault, false)
+                            .configure(KotlinFeature.SingletonSupport, false)
+                            .configure(KotlinFeature.StrictNullChecks, false)
+                            .build()
+                    )
+                    objectMapper.writeValue(file, "")
+                }
+
                 val fileOutputStream = FileOutputStream(file)
                 fileOutputStream.write(jsonObject.toString().toByteArray())
                 PrintWriter(FileWriter(file.path)).use {
