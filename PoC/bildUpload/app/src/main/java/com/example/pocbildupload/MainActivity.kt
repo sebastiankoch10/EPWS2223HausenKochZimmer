@@ -52,11 +52,18 @@ class MainActivity : AppCompatActivity() {
             //convert to JSON
             val jsonObject = JSONObject()
             jsonObject.put("outputPic",encodedImage)
+            //jsonObject.put("outputPic","Test")
             //schreiben
-            val file = File(getExternalFilesDir(null), "outputPic.json")
-            val fileOutputStream = FileOutputStream(file)
-            fileOutputStream.write(jsonObject.toString().toByteArray())
-            fileOutputStream.close()
+            try {
+                val file = File("D:\\Program Files (x86)\\EPWS2223HausenKochZimmer\\PoC\\bildUpload\\app\\src\\test\\picConvertTest\\outputPic.json")
+                val fileOutputStream = FileOutputStream(file)
+                fileOutputStream.write(jsonObject.toString().toByteArray())
+                fileOutputStream.close()
+            } catch (e: java.lang.Exception) {
+                TODO()
+            }
+            TODO()// Leeres JSON ERSTELLEN oder leeren
+
         }
     }
 
