@@ -22,6 +22,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 import org.json.JSONObject
 import com.google.gson.Gson
+import org.json.JSONException
 import java.io.*
 import java.lang.Exception
 import java.nio.charset.Charset
@@ -76,18 +77,18 @@ class MainActivity : AppCompatActivity() {
                     Files.write(file.toPath(),"".toByteArray(),StandardOpenOption.CREATE)
                 }
 
-                val fileOutputStream = FileOutputStream(file)
+/*                val fileOutputStream = FileOutputStream(file)
                 fileOutputStream.write(jsonObject.toString().toByteArray())
                 PrintWriter(FileWriter(file.path)).use {
                     val gson = Gson()
                     val jsonString = gson.toJson(fileOutputStream)
                     it.write(jsonString)
                 }
-                fileOutputStream.close() //TODO
+                fileOutputStream.close() //TODO*/
 
 
             } catch (e: Exception) {
-                TODO()
+                e.printStackTrace()
             }
             TODO()// Leeres JSON ERSTELLEN oder leeren
 
