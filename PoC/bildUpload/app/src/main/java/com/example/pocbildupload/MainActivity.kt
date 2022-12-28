@@ -18,12 +18,15 @@ import com.example.pocbildupload.databinding.ActivityMainBinding
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 import org.json.JSONObject
 import com.google.gson.Gson
 import java.io.*
 import java.lang.Exception
 import java.nio.charset.Charset
+import java.nio.file.Files
+import java.nio.file.StandardOpenOption
 
 class MainActivity : AppCompatActivity() {
 
@@ -60,24 +63,17 @@ class MainActivity : AppCompatActivity() {
             //jsonObject.put("outputPic","Test")
             //write jason or override
             //schreiben
+            val file =
+                File("D:\\Program Files (x86)\\EPWS2223HausenKochZimmer\\PoC\\bildUpload\\app\\src\\test\\picConvertTest\\outputPic.json")
             try {
-                val file =
-                    File("D:\\Program Files (x86)\\EPWS2223HausenKochZimmer\\PoC\\bildUpload\\app\\src\\test\\picConvertTest\\outputPic.json")
+
                 if (file.exists()) {
                     file.writeText("")
                 }
                 if (!file.exists()) {
-                    val objectMapper = ObjectMapper().registerModule(
-                        KotlinModule.Builder()
-                            .withReflectionCacheSize(512)
-                            .configure(KotlinFeature.NullToEmptyCollection, false)
-                            .configure(KotlinFeature.NullToEmptyMap, false)
-                            .configure(KotlinFeature.NullIsSameAsDefault, false)
-                            .configure(KotlinFeature.SingletonSupport, false)
-                            .configure(KotlinFeature.StrictNullChecks, false)
-                            .build()
-                    )
-                    objectMapper.writeValue(file, "")
+                    //val mapper = jacksonObjectMapper()
+                    //mapper.writeValue(file, "")
+                    Files.write(file.toPath(),"".toByteArray(),StandardOpenOption.CREATE)
                 }
 
                 val fileOutputStream = FileOutputStream(file)
