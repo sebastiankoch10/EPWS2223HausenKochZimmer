@@ -1,0 +1,1 @@
+C:\Users\Frederik\IdeaProjects\LoginPoC2\build\classes\kotlin\main\MainKt.class;C:\Users\Frederik\IdeaProjects\LoginPoC2\build\classes\kotlin\main\user$$serializer.class;C:\Users\Frederik\IdeaProjects\LoginPoC2\build\classes\kotlin\main\user$Companion.class;C:\Users\Frederik\IdeaProjects\LoginPoC2\build\classes\kotlin\main\user.class
