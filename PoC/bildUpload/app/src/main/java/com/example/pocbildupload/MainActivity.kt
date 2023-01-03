@@ -1,33 +1,25 @@
 package com.example.pocbildupload
 
+import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Base64
-import com.google.android.material.snackbar.Snackbar
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
-import androidx.core.content.ContextCompat
 import com.example.pocbildupload.databinding.ActivityMainBinding
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinFeature
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-
+import com.google.android.material.snackbar.Snackbar
+import com.sksamuel.scrimage.ImmutableImage
+import com.sksamuel.scrimage.metadata.ImageMetadata
 import org.json.JSONObject
-import com.google.gson.Gson
-import org.json.JSONException
 import java.io.*
-import java.lang.Exception
-import java.nio.charset.Charset
-import java.nio.file.Files
-import java.nio.file.StandardOpenOption
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -60,40 +52,44 @@ class MainActivity : AppCompatActivity() {
             val encodedImage = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
             //convert to JSON
             val jsonObject = JSONObject()
-            jsonObject.put("outputPic", encodedImage)
-            //jsonObject.put("outputPic","Test")
+            //jsonObject.put("outputPic", encodedImage)
+            jsonObject.put("outputPic","Test")
             //write jason or override
             //schreiben
-            val file =
-                File("D:\\Program Files (x86)\\EPWS2223HausenKochZimmer\\PoC\\bildUpload\\app\\src\\test\\picConvertTest\\outputPic.json")
-            try {
 
-                if (file.exists()) {
-                    file.writeText("")
+            //TODO(Schreiben von JSON)
+
+            /*try {
+                val context = Context.MODE_PRIVATE
+                val outputStreamWriter =
+                    OutputStreamWriter(openFileOutput("outputPic.json", MODE_PRIVATE))
+                val inputStream: InputStream = context.openFileInput("outputPic.json")
+
+
+                if (inputStream != null) {
+                    //file.writeText("")
                 }
-                if (!file.exists()) {
-                    //val mapper = jacksonObjectMapper()
-                    //mapper.writeValue(file, "")
-                    Files.write(file.toPath(),"".toByteArray(),StandardOpenOption.CREATE)
-                }
-
-/*                val fileOutputStream = FileOutputStream(file)
-                fileOutputStream.write(jsonObject.toString().toByteArray())
-                PrintWriter(FileWriter(file.path)).use {
-                    val gson = Gson()
-                    val jsonString = gson.toJson(fileOutputStream)
-                    it.write(jsonString)
-                }
-                fileOutputStream.close() //TODO*/
-
-
+                else (inputStream == null) {
+                        val outputStreamWriter =
+                            OutputStreamWriter(openFileOutput("outputPic.json", MODE_PRIVATE))
+                        outputStreamWriter.write("")
+                        outputStreamWriter.close()
+                    }
             } catch (e: Exception) {
                 e.printStackTrace()
-            }
-            TODO()// Leeres JSON ERSTELLEN oder leeren
+            }*/
+            //TODO(verbesserte image lese variante)
+            //https://sksamuel.github.io/scrimage/
+
+            val image = ImmutableImage.loader().fromFile("") //TODO([file] anpassen und gifs seperat)
+            image.metadata
+            //val imageMetadata = ImageMetadata("/sg.txt") //TODO(aus path möglich)
+            //val meta = ImageMetadata.fromStream(stream)
+            //meta.tags().asScala.foreach { tag =>
+            //    println(tag)
+            //}  //TODO(Tags erreichbar, add nicht klar)
 
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

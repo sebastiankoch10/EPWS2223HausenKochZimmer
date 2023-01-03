@@ -51,4 +51,5 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.14.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1'
+    implementation("com.sksamuel.scrimage:scrimage-core:4.0.32")
 }
