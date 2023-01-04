@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.os.Environment
 import android.util.Base64
 import android.view.Menu
 import android.view.MenuItem
@@ -17,8 +18,12 @@ import com.example.pocbildupload.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.metadata.ImageMetadata
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.*
+import java.nio.charset.Charset
+import java.io.FileWriter
+import java.io.PrintWriter
 
 
 class MainActivity : AppCompatActivity() {
@@ -52,36 +57,25 @@ class MainActivity : AppCompatActivity() {
             val encodedImage = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
             //convert to JSON
             val jsonObject = JSONObject()
-            //jsonObject.put("outputPic", encodedImage)
-            jsonObject.put("outputPic","Test")
+            jsonObject.put("outputPic", encodedImage)
+            //jsonObject.put("outputPic", "Test")
             //write jason or override
             //schreiben
 
             //TODO(Schreiben von JSON)
 
-            /*try {
-                val context = Context.MODE_PRIVATE
-                val outputStreamWriter =
-                    OutputStreamWriter(openFileOutput("outputPic.json", MODE_PRIVATE))
-                val inputStream: InputStream = context.openFileInput("outputPic.json")
+           val jsonString = jsonObject.toString()
+            val output: Writer
+            val file = CreateFile()
+            output = BufferedWriter(FileWriter(file))
+            output.write(jsonString)
+            output.close()
 
-
-                if (inputStream != null) {
-                    //file.writeText("")
-                }
-                else (inputStream == null) {
-                        val outputStreamWriter =
-                            OutputStreamWriter(openFileOutput("outputPic.json", MODE_PRIVATE))
-                        outputStreamWriter.write("")
-                        outputStreamWriter.close()
-                    }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }*/
             //TODO(verbesserte image lese variante)
             //https://sksamuel.github.io/scrimage/
 
-            val image = ImmutableImage.loader().fromFile("") //TODO([file] anpassen und gifs seperat)
+            val image =
+                ImmutableImage.loader().fromFile("") //TODO([file] anpassen und gifs seperat)
             image.metadata
             //val imageMetadata = ImageMetadata("/sg.txt") //TODO(aus path möglich)
             //val meta = ImageMetadata.fromStream(stream)
@@ -90,6 +84,19 @@ class MainActivity : AppCompatActivity() {
             //}  //TODO(Tags erreichbar, add nicht klar)
 
         }
+    }
+
+    private fun CreateFile(): File {
+
+        val fileName = "outputPic"
+
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+        if (storageDir != null) {
+            if(!storageDir.exists()) {
+                storageDir.mkdir()
+            }
+        }
+        return File.createTempFile(fileName,".json",storageDir)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
