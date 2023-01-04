@@ -1,13 +1,14 @@
 package com.example.pocbildupload
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Environment
 import android.util.Base64
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
@@ -17,13 +18,8 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.pocbildupload.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.sksamuel.scrimage.ImmutableImage
-import com.sksamuel.scrimage.metadata.ImageMetadata
-import org.json.JSONException
 import org.json.JSONObject
 import java.io.*
-import java.nio.charset.Charset
-import java.io.FileWriter
-import java.io.PrintWriter
 
 
 class MainActivity : AppCompatActivity() {
@@ -45,31 +41,18 @@ class MainActivity : AppCompatActivity() {
 
         binding.fab.setOnClickListener { view ->
             //lesen
-            val drawable = ContextCompat.getDrawable(this, R.drawable.muensterplatz_freiburg)
-            val test = drawable.toString()
-            Snackbar.make(view, test, Snackbar.LENGTH_LONG)
-                .setAction("fehler", null).show()
+            val drawable = readFile(view)
             //convert bitmap (JPG?)
             val bitmap = (drawable as BitmapDrawable).bitmap
             //convert Base64 String
-            val outputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-            val encodedImage = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
+            val encodedImage = convertToBase64(bitmap)
             //convert to JSON
             val jsonObject = JSONObject()
             jsonObject.put("outputPic", encodedImage)
             //jsonObject.put("outputPic", "Test")
             //write jason or override
             //schreiben
-
-            //TODO(Schreiben von JSON)
-
-           val jsonString = jsonObject.toString()
-            val output: Writer
-            val file = CreateFile()
-            output = BufferedWriter(FileWriter(file))
-            output.write(jsonString)
-            output.close()
+            writeToJson(jsonObject)
 
             //TODO(verbesserte image lese variante)
             //https://sksamuel.github.io/scrimage/
@@ -86,17 +69,41 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun writeToJson(jsonObject: JSONObject) {
+        val jsonString = jsonObject.toString()
+        val output: Writer
+        val file = CreateFile()
+        output = BufferedWriter(FileWriter(file))
+        output.write(jsonString)
+        output.close()
+    }
+
+    private fun convertToBase64(bitmap: Bitmap): String? {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        val encodedImage = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
+        return encodedImage
+    }
+
+    private fun readFile(view: View): Drawable? {
+        val drawable = ContextCompat.getDrawable(this, R.drawable.muensterplatz_freiburg)
+        val readFileString = drawable.toString()
+        Snackbar.make(view, readFileString, Snackbar.LENGTH_LONG)
+            .setAction("fehler", null).show()
+        return drawable
+    }
+
     private fun CreateFile(): File {
 
         val fileName = "outputPic"
 
         val storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
         if (storageDir != null) {
-            if(!storageDir.exists()) {
+            if (!storageDir.exists()) {
                 storageDir.mkdir()
             }
         }
-        return File.createTempFile(fileName,".json",storageDir)
+        return File.createTempFile(fileName, ".json", storageDir)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
