@@ -17,7 +17,6 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.pocbildupload.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import com.sksamuel.scrimage.ImmutableImage
 import org.json.JSONObject
 import java.io.*
 
@@ -56,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
             //TODO(verbesserte image lese variante)
             //https://sksamuel.github.io/scrimage/
-        }
+
             /*
             val image = ImmutableImage.loader().fromFile("") //TODO([file] anpassen)
             image.metadata
@@ -66,7 +65,7 @@ class MainActivity : AppCompatActivity() {
             //    println(tag)
             //}  //TODO(Tags erreichbar, add nicht klar)
             */
-
+        }
     }
 
     private fun writeToJson(jsonObject: JSONObject) {
@@ -112,14 +111,15 @@ class MainActivity : AppCompatActivity() {
         val fileName = "outputPic"
 
 
-        val storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        if(storageDir != null) {
-            if(!storageDir.exists()) {
+        val storageDir =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        if (storageDir != null) {
+            if (!storageDir.exists()) {
                 FileOutputStream(fileName)
             }
         }
 
-        return File.createTempFile(fileName, ".json",storageDir)
+        return File.createTempFile(fileName, ".json", storageDir)
     }
 
 
