@@ -56,24 +56,25 @@ class MainActivity : AppCompatActivity() {
 
             //TODO(verbesserte image lese variante)
             //https://sksamuel.github.io/scrimage/
-
-            val image =
-                ImmutableImage.loader().fromFile("") //TODO([file] anpassen und gifs seperat)
+        }
+            /*
+            val image = ImmutableImage.loader().fromFile("") //TODO([file] anpassen)
             image.metadata
             //val imageMetadata = ImageMetadata("/sg.txt") //TODO(aus path möglich)
             //val meta = ImageMetadata.fromStream(stream)
             //meta.tags().asScala.foreach { tag =>
             //    println(tag)
             //}  //TODO(Tags erreichbar, add nicht klar)
+            */
 
-        }
     }
 
     private fun writeToJson(jsonObject: JSONObject) {
         val jsonString = jsonObject.toString()
         val output: Writer
-        val file = CreateFile()
-        output = BufferedWriter(FileWriter(file))
+        //val internalFile = CreateInternalFile()
+        val shardFile = CreateSharedFile()
+        output = BufferedWriter(FileWriter(shardFile))
         output.write(jsonString)
         output.close()
     }
@@ -93,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         return drawable
     }
 
-    private fun CreateFile(): File {
+    private fun CreateInternalFile(): File {
 
         val fileName = "outputPic"
 
@@ -105,6 +106,22 @@ class MainActivity : AppCompatActivity() {
         }
         return File.createTempFile(fileName, ".json", storageDir)
     }
+
+    private fun CreateSharedFile(): File {
+
+        val fileName = "outputPic"
+
+
+        val storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        if(storageDir != null) {
+            if(!storageDir.exists()) {
+                FileOutputStream(fileName)
+            }
+        }
+
+        return File.createTempFile(fileName, ".json",storageDir)
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
