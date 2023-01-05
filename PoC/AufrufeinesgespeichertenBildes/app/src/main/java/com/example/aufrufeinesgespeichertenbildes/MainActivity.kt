@@ -1,8 +1,13 @@
 package com.example.aufrufeinesgespeichertenbildes
 
+import android.graphics.BitmapFactory
+import android.opengl.ETC1.decodeImage
 import android.os.Bundle
+import android.os.Environment
+import android.util.Base64
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -11,7 +16,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.aufrufeinesgespeichertenbildes.databinding.ActivityMainBinding
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import java.io.File
+import org.json.JSONObject
+import java.io.*
+import android.widget.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,9 +41,34 @@ class MainActivity : AppCompatActivity() {
             //TODO()
             //TODO(Lese JSON von Device)
             val filePath =
-                "/storage/emulated/0/Android/data/com.example.pocbildupload/files/Documents/"
-            val fileName = "outputPic2650852323735112380.json"
-            readJson(filePath,fileName)
+            "/storage/emulated/0/Documents/"
+            val fileName = "outputPic6385210105626963512.json"
+            val storageDir = Environment.getExternalStoragePublicDirectory(filePath) //ToDo
+            val file = File(storageDir, fileName)
+            val contentFile = BufferedReader(FileReader(file)).use { it.readText() }
+
+            val jsonObject = JSONObject()
+            jsonObject.put("jsonImage" ,contentFile)
+            val imageView = ImageView(this)
+            imageView.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            val linearLayout = findViewById<LinearLayout>(R.id.linear_layout)
+            linearLayout.addView(imageView)
+
+
+            val encodedimage = jsonObject.getString("jsonImage")
+            val imageBytes = Base64.decode(encodedimage, Base64.DEFAULT)
+            val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+            imageView.setImageBitmap(bitmap)
+
+
+
+
+
+
+
 
 
 
