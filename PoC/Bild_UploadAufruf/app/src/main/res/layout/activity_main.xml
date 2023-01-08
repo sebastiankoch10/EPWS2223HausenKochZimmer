@@ -7,31 +7,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/frameLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </FrameLayout>
-
     <LinearLayout
-        android:layout_width="195dp"
-        android:layout_height="131dp"
-        android:orientation="vertical"
-        app:layout_anchor="@+id/frameLayout2"
-        app:layout_anchorGravity="center">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/upload"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/aufruf"
-            android:text="upload" />
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/aufruf"
+            <Button
+                android:id="@+id/aufruf"
+                android:layout_width="176dp"
+                android:layout_height="wrap_content"
+                android:text="aufruf" />
+
+            <Button
+                android:id="@+id/upload"
+                android:layout_width="176dp"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/aufruf"
+                android:text="upload" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="aufruf" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"></LinearLayout>
+
     </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
