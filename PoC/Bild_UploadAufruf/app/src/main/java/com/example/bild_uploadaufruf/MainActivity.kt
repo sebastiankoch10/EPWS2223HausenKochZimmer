@@ -19,7 +19,9 @@ import org.json.JSONObject
 import java.io.*
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        val  jsonObject = JSONObject()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -34,17 +36,17 @@ class MainActivity : AppCompatActivity() {
             //convert Base64 String
             val encodedImage = convertToBase64(bitmap)
             //convert to JSON
-            val jsonObject = JSONObject()
+
             jsonObject.put("outputPic", encodedImage)
             //jsonObject.put("outputPic", "Test")
             //write jason or override
             //schreiben
-            writeToJson(jsonObject)
+            //writeToJson(jsonObject)
 
             val aufrufButton = findViewById<Button>(R.id.aufruf)
             aufrufButton.setOnClickListener {
                 try {
-                    val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                    /*val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
                     val fileName = "outputPic6385210105626963512.json"
                     val file = File(filePath, fileName)
                     val contentFile = BufferedReader(FileReader(file)).use { it.readText() }
@@ -52,9 +54,9 @@ class MainActivity : AppCompatActivity() {
 
                     val jsonObject = JSONObject()
                     jsonObject.put("jsonImage", contentFile)
+*/
 
-
-                    val imageView = ImageView(this)
+                    val imageView = ImageView(this@MainActivity)
                     imageView.layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
                     )
@@ -62,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                     linearLayout.addView(imageView)
 
 
-                    val encodedimage = jsonObject.getString("jsonImage")
+                    val encodedimage = jsonObject.getString("outputPic")
 
                     val imageBytes = Base64.decode(encodedimage, Base64.DEFAULT)
                     val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
