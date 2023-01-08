@@ -22,15 +22,16 @@
         app:layout_anchorGravity="center">
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/upload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/uploade" />
+            android:contentDescription="@string/aufruf"
+            android:text="upload" />
 
         <Button
-            android:id="@+id/button6"
+            android:id="@+id/aufruf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/aufruf" />
+            android:text="aufruf" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

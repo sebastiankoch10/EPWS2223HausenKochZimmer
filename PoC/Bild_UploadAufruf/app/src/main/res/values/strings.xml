@@ -2,4 +2,5 @@
     <string name="app_name">Bild_UploadAufruf</string>
     <string name="uploade">Uploade</string>
     <string name="aufruf">Aufruf</string>
+    <string name="upload" />
 </resources>
