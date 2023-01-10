@@ -3,6 +3,8 @@ Zu Beachten:
 - Notiz beschreibend, bzw. erklärend
 
 Aufgaben:
+- POC Planung finalisieren
+- Anforderungsermittlung finalisieren
 - Zeitplanung Audit4
 - Projektplan Meeting Art
 - Name = https://miro.com/app/board/uXjVPB5cFxc=/?moveToWidget=3458764542810426148&cot=10
@@ -14,7 +16,23 @@ ToDos aus Iterationen:
 - Userprofiles
 - Usecases
 - PoCs
+ToDos aus Erstellung:
 - Activity Diagramm, Interaktionsmodellierung
+
+Sonstig:
+Usergruppe, abgeändert?
 
 ???:
 Konkurenzanalys(https://github.com/sebastiankoch10/EPWS2223HausenKochZimmer/blob/main/Modellierungen/konkurrenzanalyse.docx)
+
+POCs:
+Bild upload: 
+- Mehrere Bilformate, Meta daten im Bildobjekt, Aufruf Metadaten? :
+- Ungültige Eingabe wurde übernommen (Constraints für Datum- und Adressformat)
+Fallback
+- Bild wird ohne Metadaten gespeichert (bestimmte)
+- Es werden begrenzte Bildformate gefordert
+Bild anzeigen:
+Fallback
+- Eindeutige Fehlermeldung anzeigen
+- Aufforderung zum neu laden mitteilen
