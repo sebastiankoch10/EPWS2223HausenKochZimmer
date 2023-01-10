@@ -1,0 +1,20 @@
+Zu Beachten:
+- Artefakte als Darstellung, Link als Extra
+- Notiz beschreibend, bzw. erklärend
+
+Aufgaben:
+- Zeitplanung Audit4
+- Projektplan Meeting Art
+- Name = https://miro.com/app/board/uXjVPB5cFxc=/?moveToWidget=3458764542810426148&cot=10
+- wiki?
+
+ToDos aus Iterationen:
+- Anforderungen
+- Risikoanalyse
+- Userprofiles
+- Usecases
+- PoCs
+- Activity Diagramm, Interaktionsmodellierung
+
+???:
+Konkurenzanalys(https://github.com/sebastiankoch10/EPWS2223HausenKochZimmer/blob/main/Modellierungen/konkurrenzanalyse.docx)
