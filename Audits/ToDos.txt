@@ -7,14 +7,13 @@ Aufgaben:
 - Anforderungsermittlung finalisieren
 - Zeitplanung Audit4
 - Projektplan Meeting Art
-- Name = https://miro.com/app/board/uXjVPB5cFxc=/?moveToWidget=3458764542810426148&cot=10
 - wiki?
 
 ToDos aus Iterationen:
-- Anforderungen
-- Risikoanalyse
-- Userprofiles
-- Usecases
+[- Anforderungen]
+[- Risikoanalyse]
+- Userprofiles (kurz)
+- Usecases (kurz)
 - PoCs
 ToDos aus Erstellung:
 - Activity Diagramm, Interaktionsmodellierung
