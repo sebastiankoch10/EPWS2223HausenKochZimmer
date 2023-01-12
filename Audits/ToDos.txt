@@ -5,6 +5,7 @@ Zu Beachten:
 Aufgaben:
 - POC Planung finalisieren
 - Anforderungsermittlung finalisieren
+- UseCases finalisieren
 - vorläufiger Zeitplanung Audit4, Deliverables
 - wiki?
 - API
