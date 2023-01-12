@@ -17,6 +17,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.pocbildupload.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import org.json.JSONObject
 import java.io.*
 
@@ -46,12 +48,12 @@ class MainActivity : AppCompatActivity() {
             //convert Base64 String
             val encodedImage = convertToBase64(bitmap)
             //convert to JSON
-            val jsonObject = JSONObject()
-            jsonObject.put("outputPic", encodedImage)
-            //jsonObject.put("outputPic", "Test")
+            //val jsonObject = JSONObject()
+            //jsonObject.put("outputPic", encodedImage)
             //write jason or override
             //schreiben
-            writeToJson(jsonObject)
+            //writeToJson(jsonObject)
+            writeTODatabase(encodedImage.toString())
 
             //TODO(verbesserte image lese variante)
             //https://sksamuel.github.io/scrimage/
@@ -76,6 +78,14 @@ class MainActivity : AppCompatActivity() {
         output = BufferedWriter(FileWriter(shardFile))
         output.write(jsonString)
         output.close()
+    }
+
+    private fun writeTODatabase(pic: String) {
+
+        val database = Firebase.database
+        val myRef = database.getReference("outputPic")
+
+        myRef.setValue("pic")
     }
 
     private fun convertToBase64(bitmap: Bitmap): String? {
