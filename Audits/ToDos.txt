@@ -26,11 +26,11 @@ Konkurenzanalys(https://github.com/sebastiankoch10/EPWS2223HausenKochZimmer/blob
 
 POCs:
 Bild upload: 
-- Mehrere Bilformate, Meta daten im Bildobjekt, Aufruf Metadaten? :
-- Ungültige Eingabe wurde übernommen (Constraints für Datum- und Adressformat)
+- Mehrere Bilformate, Meta daten auslesen und speichern im Bildobjekt
 Fallback
 - Bild wird ohne Metadaten gespeichert (bestimmte)
 - Es werden begrenzte Bildformate gefordert
+- Aus Eindeutige Fehlermeldung wenn technische Fehler bei der Ausführung der Upload Funktion erfolgen
 Bild anzeigen:
 Fallback
 - Eindeutige Fehlermeldung anzeigen
