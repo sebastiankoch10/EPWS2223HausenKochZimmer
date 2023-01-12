@@ -6,8 +6,8 @@ Aufgaben:
 - POC Planung finalisieren
 - Anforderungsermittlung finalisieren
 - vorläufiger Zeitplanung Audit4, Deliverables
-- Projektplan Meeting Art
 - wiki?
+- API
 
 ToDos aus Iterationen:
 [- Anforderungen]
@@ -18,8 +18,6 @@ ToDos aus Iterationen:
 ToDos aus Erstellung:
 - Activity Diagramm, Interaktionsmodellierung
 
-???:
-Konkurenzanalys(https://github.com/sebastiankoch10/EPWS2223HausenKochZimmer/blob/main/Modellierungen/konkurrenzanalyse.docx)
 
 POCs:
 Bild upload: 
