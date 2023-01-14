@@ -1,5 +1,6 @@
 package com.example.prototype
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.graphics.Bitmap
@@ -102,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
             //Aktuelle Stadt abspeichern
             val speicherString = Json.encodeToString(currentStadt)
-            writeToJson(speicherString)
+            writeToJson(speicherString, "Städteliste.json")
 
             //Subscriber benachrichtigen
             currentStadt.notifySubs(currentStadt,userList)
@@ -153,6 +154,8 @@ class MainActivity : AppCompatActivity() {
         //Logout
         val logoutButton = findViewById<Button>(R.id.logout)
         logoutButton.setOnClickListener {
+            val speicherString = Json.encodeToString(userList)
+            writeToJson(speicherString, "Users.json")
             viewFlipper.showPrevious()
         }
     }
@@ -172,29 +175,14 @@ class MainActivity : AppCompatActivity() {
         return encodedImage
     }
 
-    private fun writeToJson(jsonString: String) {
-        val output: Writer
-        //val internalFile = CreateInternalFile()
-        val shardFile = CreateSharedFile()
-        output = BufferedWriter(FileWriter(shardFile))
-        output.write(jsonString)
-        output.close()
-    }
-
-    private fun CreateSharedFile(): File {
-
-        val fileName = "Städteliste"
-
-
-        val storageDir =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        if (storageDir != null) {
-            if (!storageDir.exists()) {
-                FileOutputStream(fileName)
-            }
+    private fun writeToJson(jsonString: String, filename: String) {
+        try {
+            val fOut = openFileOutput(filename, Context.MODE_PRIVATE)
+            fOut.write(jsonString.toByteArray())
+            fOut.close()
+        } catch (e:Exception){
+            e.printStackTrace()
         }
-
-        return File.createTempFile(fileName, ".json", storageDir)
     }
 
 }
