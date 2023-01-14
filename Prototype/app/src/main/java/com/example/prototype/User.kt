@@ -11,7 +11,7 @@ class User(
     var notifications: MutableList<String>
 ) {
 
-    fun notificationStadt (absender: Stadt) {
+    fun notificationStadt (absender: String) {
         val text = "Es gibt einen neuen Beitrag in $absender"
         notifications.add(text)
     }

@@ -10,9 +10,7 @@ import android.os.Environment
 import android.util.Base64
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.*
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import org.json.JSONObject
@@ -24,7 +22,6 @@ import java.io.*
 import java.nio.file.Paths
 
 /* TODO
-* Login einrichten
 * Städteliste laden
 * currentStadt anhand User festlegen
 * Abfrage für Bild Metadaten einrichten
@@ -35,20 +32,45 @@ import java.nio.file.Paths
 
 
 class MainActivity : AppCompatActivity() {
+    lateinit var usernameText: EditText
+    lateinit var passwordText: EditText
+    lateinit var viewFlipper: ViewFlipper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //Lädt einen aktuellen User, to be replaced by Login
+        usernameText = findViewById(R.id.editTextUsername)
+        passwordText = findViewById(R.id.editTextPassword)
+        viewFlipper = findViewById(R.id.idViewFlipper)
+
+        //userListe einlesen
         val userFile = System.getProperty("user.dir")+"\\Users.json"
         val usersInput: InputStream = File(userFile).inputStream()
         val usersJson = usersInput.bufferedReader().use { it.readText() }
         val userList: List<User> = Json.decodeFromString(usersJson)
-        val currentUser = userList[0]
+
+        //leeren aktuellen User initialisieren
+        var currentUser = User("","","", mutableListOf())
+
+        //login Button
+        val loginButton = findViewById<Button>(R.id.login)
+        loginButton.setOnClickListener {
+            //Übernahme der Eingabe
+            var username = usernameText.text.toString()
+            var password = passwordText.text.toString()
+
+            //Vergleich mit Userliste, setzt gefundenen User als currentUser und wechselt zum nächsten Layout
+            for (user in userList) {
+                if (username==user.username && password==user.password) {
+                    currentUser = user
+                    viewFlipper.showNext()
+                }
+            }
+        }
 
         //Erzeugt Stadtobjekt, to be replaced by loading city data from JSON
         var currentStadt = Stadt(
             "Gummersbach", "NRW", Forum(),
-            mutableListOf<Bild>(), mutableListOf<Geschichte>(), mutableListOf<User>()
+            mutableListOf<Bild>(), mutableListOf<Geschichte>(), mutableListOf<String>()
         )
 
 
@@ -84,8 +106,8 @@ class MainActivity : AppCompatActivity() {
             val speicherString = Json.encodeToString(currentStadt)
             writeToJson(speicherString)
 
-            //Subscriber Benachrichtigen
-            currentStadt.notifySubs()
+            //Subscriber benachrichtigen
+            currentStadt.notifySubs(currentStadt,userList)
         }
 
         //Bildaufruf
@@ -121,13 +143,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         //SubButton
-        val button = findViewById<Button>(R.id.subscribe_button)
-        button.setOnClickListener {
-            if (!currentStadt.subscribers.contains(currentUser)) {
+        val subButton = findViewById<Button>(R.id.subscribe_button)
+        subButton.setOnClickListener {
+            if (!currentStadt.subscribers.contains(currentUser.username)) {
                 currentStadt.subscribe(currentUser)
             } else {
                 currentStadt.unsubscribe(currentUser)
             }
+        }
+
+        //Logout
+        val logoutButton = findViewById<Button>(R.id.logout)
+        logoutButton.setOnClickListener {
+            viewFlipper.showPrevious()
         }
     }
 
