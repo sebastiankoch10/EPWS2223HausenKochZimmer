@@ -48,12 +48,12 @@ class MainActivity : AppCompatActivity() {
             //convert Base64 String
             val encodedImage = convertToBase64(bitmap)
             //convert to JSON
-            //val jsonObject = JSONObject()
-            //jsonObject.put("outputPic", encodedImage)
+            val jsonObject = JSONObject()
+            jsonObject.put("outputPic", encodedImage)
             //write jason or override
             //schreiben
-            //writeToJson(jsonObject)
-            writeTODatabase(encodedImage.toString())
+            writeToJson(jsonObject)
+            //writeTODatabase(encodedImage.toString())
 
             //TODO(verbesserte image lese variante)
             //https://sksamuel.github.io/scrimage/
@@ -97,9 +97,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun readFile(view: View): Drawable? {
         val drawable = ContextCompat.getDrawable(this, R.drawable.muensterplatz_freiburg)
-        val readFileString = drawable.toString()
-        Snackbar.make(view, readFileString, Snackbar.LENGTH_LONG)
-            .setAction("fehler", null).show()
+        if (drawable != null) {
+            Snackbar.make(view, "Das Bild ist hochgeladen.", Snackbar.LENGTH_LONG).show()
+        } else {
+            Snackbar.make(
+                view,
+                "Das Bild konnte nicht hochgeladen werden, bitte versuchen Sie es zu einem späteren Zeitpunkt nocheinmal.",
+                Snackbar.LENGTH_LONG
+            ).setAction("Aktion", null).show()
+        }
         return drawable
     }
 
