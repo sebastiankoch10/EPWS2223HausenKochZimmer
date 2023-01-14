@@ -10,19 +10,23 @@ class Stadt (
         var forum: Forum,
         var bilder: MutableList<Bild>,
         var geschichten: MutableList<Geschichte>,
-        var subscribers: MutableList<User>,
+        var subscribers: MutableList<String>,
         ){
-        fun notifySubs (){
-                for (user in subscribers) {
-                        user.notificationStadt(this)
+        fun notifySubs (currentStadt:Stadt, userList: List<User>) {
+                for (name in currentStadt.subscribers) {
+                        for (user in userList) {
+                                if (name == user.username) {
+                                        user.notificationStadt(this.name)
+                                }
+                        }
                 }
 
         }
         fun subscribe (user:User) {
-                subscribers.add(user)
+                subscribers.add(user.username)
         }
         fun unsubscribe (user:User) {
-                subscribers.remove(user)
+                subscribers.remove(user.username)
         }
 
         fun addBild (bild:Bild) {
