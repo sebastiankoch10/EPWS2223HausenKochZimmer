@@ -1,11 +1,13 @@
 package com.example.aufrufeinesgespeichertenbildes
 
 import android.Manifest
+import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Environment
 import android.util.Base64
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -21,6 +23,15 @@ import com.example.aufrufeinesgespeichertenbildes.databinding.ActivityMainBindin
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 import org.json.JSONObject
 import java.io.*
 
@@ -69,23 +80,36 @@ class MainActivity : AppCompatActivity() {
 
             try {
 
+                val options = FirebaseOptions.Builder()
+                    .setApiKey("<API_KEY>")
+                    .setApplicationId("<APP_ID>")
+                    .setDatabaseUrl("https://epws2223hausenkochzimmer-default-rtdb.europe-west1.firebasedatabase.app")
+                    .build()
+
+                FirebaseApp.initializeApp(applicationContext, options, "secondApp")
+
                 // Read from the database
-                myRef.addValueEventListener(object: ValueEventListener() {
+                val dataBase = FirebaseDatabase.getInstance()
+                val myRef = dataBase.getReference("outputPic")
+                myRef.addValueEventListener(object: ValueEventListener {
 
                     override fun onDataChange(snapshot: DataSnapshot) {
                         // This method is called once with the initial value and again
                         // whenever data at this location is updated.
-                        val value = snapshot.getValue<String>()
-                        Log.d(TAG, "Value is: " + value)
+                        val value = snapshot.getValue(String::class.java)
+                        Log.d(TAG, "Value is: $value")
                     }
 
                     override fun onCancelled(error: DatabaseError) {
                         Log.w(TAG, "Failed to read value.", error.toException())
                     }
+                })
 
-                //val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-                //val fileName = "outputPic6385210105626963512.json"
-                //val file = File(filePath, fileName)
+
+
+                val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                val fileName = "outputPic6385210105626963512.json"
+                val file = File(filePath, fileName)
                 val contentFile = BufferedReader(FileReader(file)).use { it.readText() }
 
 
@@ -125,7 +149,7 @@ class MainActivity : AppCompatActivity() {
             //TODO(Aus gabe als Bild)
             //ImageView funtion
 
-        }
+            }
         }
     }
 
