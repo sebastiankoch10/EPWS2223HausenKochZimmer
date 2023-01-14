@@ -1,26 +1,24 @@
 package com.example.prototype
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Environment
+import android.os.Bundle
 import android.util.Base64
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
-import org.json.JSONObject
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.*
-import java.io.*
-import java.nio.file.Paths
+import kotlinx.serialization.json.Json
+import java.io.ByteArrayOutputStream
+import java.io.FileNotFoundException
+import java.io.IOException
 
 /* TODO
 * Städteliste laden
@@ -44,11 +42,12 @@ class MainActivity : AppCompatActivity() {
         viewFlipper = findViewById(R.id.idViewFlipper)
 
         //userListe einlesen
-        val usersJson = applicationContext.assets.open("Users.json").bufferedReader().use { it.readText() }
+        val usersJson =
+            applicationContext.assets.open("Users.json").bufferedReader().use { it.readText() }
         val userList: List<User> = Json.decodeFromString(usersJson)
 
         //leeren aktuellen User initialisieren
-        var currentUser = User("","","", mutableListOf())
+        var currentUser = User("", "", "", mutableListOf())
 
         //login Button
         val loginButton = findViewById<Button>(R.id.login)
@@ -59,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
             //Vergleich mit Userliste, setzt gefundenen User als currentUser und wechselt zum nächsten Layout
             for (user in userList) {
-                if (username==user.username && password==user.password) {
+                if (username == user.username && password == user.password) {
                     currentUser = user
                     viewFlipper.showNext()
                 }
@@ -106,7 +105,7 @@ class MainActivity : AppCompatActivity() {
             writeToJson(speicherString, "Städteliste.json")
 
             //Subscriber benachrichtigen
-            currentStadt.notifySubs(currentStadt,userList)
+            currentStadt.notifySubs(currentStadt, userList)
         }
 
         //Bildaufruf
@@ -127,7 +126,7 @@ class MainActivity : AppCompatActivity() {
                 val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
                 imageView.setImageBitmap(bitmap)
 
-            //Exceptions
+                //Exceptions
             } catch (e: FileNotFoundException) {
                 println("File not found: ${e.message}")
             } catch (e: IOException) {
@@ -180,7 +179,7 @@ class MainActivity : AppCompatActivity() {
             val fOut = openFileOutput(filename, Context.MODE_PRIVATE)
             fOut.write(jsonString.toByteArray())
             fOut.close()
-        } catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
