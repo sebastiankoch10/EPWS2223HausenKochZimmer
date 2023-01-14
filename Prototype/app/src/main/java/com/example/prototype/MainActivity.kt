@@ -43,9 +43,7 @@ class MainActivity : AppCompatActivity() {
         viewFlipper = findViewById(R.id.idViewFlipper)
 
         //userListe einlesen
-        val userFile = System.getProperty("user.dir")+"\\Users.json"
-        val usersInput: InputStream = File(userFile).inputStream()
-        val usersJson = usersInput.bufferedReader().use { it.readText() }
+        val usersJson = applicationContext.assets.open("Users.json").bufferedReader().use { it.readText() }
         val userList: List<User> = Json.decodeFromString(usersJson)
 
         //leeren aktuellen User initialisieren
@@ -185,7 +183,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun CreateSharedFile(): File {
 
-        val fileName = "outputPic"
+        val fileName = "Städteliste"
 
 
         val storageDir =
