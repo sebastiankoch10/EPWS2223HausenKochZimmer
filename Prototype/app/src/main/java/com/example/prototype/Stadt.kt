@@ -7,7 +7,6 @@ import kotlinx.serialization.json.*
 class Stadt (
         val name: String,
         val bundesland: String,
-        var forum: Forum,
         var bilder: MutableList<Bild>,
         var geschichten: MutableList<Geschichte>,
         var subscribers: MutableList<String>,

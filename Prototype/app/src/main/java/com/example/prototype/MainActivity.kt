@@ -46,9 +46,9 @@ class MainActivity : AppCompatActivity() {
             applicationContext.assets.open("Users.json").bufferedReader().use { it.readText() }
         val userList: List<User> = Json.decodeFromString(usersJson)
 
-        //leeren aktuellen User initialisieren
-        var currentUser = User("", "", "", mutableListOf())
-
+        //leeren aktuellen User & User initialisieren
+        var currentUser = User("", "", "", mutableListOf(),"")
+        var currentStadt = Stadt("","",mutableListOf(),mutableListOf(),mutableListOf())
         //login Button
         val loginButton = findViewById<Button>(R.id.login)
         loginButton.setOnClickListener {
@@ -65,11 +65,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //Erzeugt Stadtobjekt, to be replaced by loading city data from JSON
-        var currentStadt = Stadt(
-            "Gummersbach", "NRW", Forum(),
-            mutableListOf<Bild>(), mutableListOf<Geschichte>(), mutableListOf<String>()
-        )
+        //Staedteliste einlesen
+        val stadtJson =
+            applicationContext.assets.open("Staedteliste.json").bufferedReader().use { it.readText() }
+        val staedteliste: List<Stadt> = Json.decodeFromString(stadtJson)
+
+        //setze currenStadt auf heimatstadt von currentUser
+        for (stadt in staedteliste) {
+            if (currentUser.heimatstadt==stadt.name) {
+                currentStadt= stadt
+            }
+        }
 
 
         //Upload

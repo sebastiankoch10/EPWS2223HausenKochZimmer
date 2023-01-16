@@ -3,18 +3,21 @@
     "username": "Nelavar",
     "password": "12345",
     "email": "freddi.hausen@web.de",
-    "notifications": []
+    "notifications": [],
+    "heimatstadt":  "Köln"
   },
   {
     "username": "Freddi",
     "password": "LMAO",
     "email": "freddi.hausen@web.de",
-    "notifications": []
+    "notifications": [],
+    "heimatstadt": "Gummersbach"
   },
   {
     "username": "BOB",
     "password": "fisch",
     "email": "freddi.hausen@web.de",
-    "notifications": []
+    "notifications": [],
+    "Heimatstadt": "Lisboa"
   }
 ]
