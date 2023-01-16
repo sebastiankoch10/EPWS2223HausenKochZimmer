@@ -41,6 +41,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId") //ID of notificationsText seemingly cannot be found
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //Views werden an Variablen gebunden für späteren Aufruf
         setContentView(R.layout.activity_main)
         usernameText = findViewById(R.id.editTextUsername)
         passwordText = findViewById(R.id.editTextPassword)
@@ -69,14 +71,16 @@ class MainActivity : AppCompatActivity() {
             var username = usernameText.text.toString()
             var password = passwordText.text.toString()
 
-            //Vergleich mit Userliste, setzt gefundenen User als currentUser und wechselt zum nächsten Layout
+            //Vergleich mit Userliste, setzt gefundenen User als currentUser
             for (user in userList) {
                 if (username == user.username && password == user.password) {
                     currentUser = user
+                    //falls notifications vorhanden, zeige Erste
                     if (currentUser.notifications.isNotEmpty()){
                         notifications.text = currentUser.notifications[0]
                         notifications.visibility = View.VISIBLE
                     }
+                    //Wechsel zum nächsten Layout
                     viewFlipper.showNext()
                 }
             }
@@ -130,6 +134,7 @@ class MainActivity : AppCompatActivity() {
             //Subscriber benachrichtigen
             currentStadt.notifySubs(currentStadt, userList)
 
+            //Feedback
             notifications.text = "Bild wurde hochgeladen"
             notifications.visibility = View.VISIBLE
         }
@@ -138,10 +143,8 @@ class MainActivity : AppCompatActivity() {
         val aufrufButton = findViewById<Button>(R.id.aufruf)
         aufrufButton.setOnClickListener {
             try {
-                //Einrichten des imageViews
-
+                //imageView wird dem Layout hinzugefügt
                 linearLayout.addView(imageView)
-                imageView.visibility = View.VISIBLE
 
                 //decodieren und Anzeige des Bildes
                 val encodedImage = currentStadt.bilder[0].Bilddaten
@@ -180,14 +183,19 @@ class MainActivity : AppCompatActivity() {
         //Logout
         val logoutButton = findViewById<Button>(R.id.logout)
         logoutButton.setOnClickListener {
+            //Speichern von Veränderung an Usern (Notifications)
             val speicherString = Json.encodeToString(userList)
             writeToJson(speicherString, "Users.json")
+
+            //Rückkehr auf Login Layout
             viewFlipper.showPrevious()
+            //Remove/Hide temporary Views
             notifications.visibility = View.INVISIBLE
             linearLayout.removeView(imageView)
         }
     }
 
+    //einlesen des Bildes als Drawable
     private fun readFile(view: View): Drawable? {
         val drawable = ContextCompat.getDrawable(this, R.drawable.muensterplatz_freiburg)
         val readFileString = drawable.toString()
@@ -196,6 +204,7 @@ class MainActivity : AppCompatActivity() {
         return drawable
     }
 
+    //enkodieren des Bildes zu String
     private fun convertToBase64(bitmap: Bitmap): String? {
         val outputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
@@ -203,6 +212,7 @@ class MainActivity : AppCompatActivity() {
         return encodedImage
     }
 
+    //speichern to Json in internem Speicher des Devices
     private fun writeToJson(jsonString: String, filename: String) {
         try {
             val fOut = openFileOutput(filename, Context.MODE_PRIVATE)
