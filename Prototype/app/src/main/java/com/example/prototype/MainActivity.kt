@@ -1,5 +1,6 @@
 package com.example.prototype
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -34,12 +35,20 @@ class MainActivity : AppCompatActivity() {
     lateinit var usernameText: EditText
     lateinit var passwordText: EditText
     lateinit var viewFlipper: ViewFlipper
+    lateinit var notifications: TextView
+
+    @SuppressLint("MissingInflatedId") //ID of notificationsText seemingly cannot be found
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         usernameText = findViewById(R.id.editTextUsername)
         passwordText = findViewById(R.id.editTextPassword)
         viewFlipper = findViewById(R.id.idViewFlipper)
+        notifications = findViewById(R.id.notificationsText)
+        val imageView = ImageView(this@MainActivity)
+        imageView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        )
 
         //userListe einlesen
         val usersJson =
@@ -49,7 +58,9 @@ class MainActivity : AppCompatActivity() {
         //leeren aktuellen User & User initialisieren
         var currentUser = User("", "", "", mutableListOf(),"")
         var currentStadt = Stadt("","",mutableListOf(),mutableListOf(),mutableListOf())
-        //login Button
+
+
+        //Login
         val loginButton = findViewById<Button>(R.id.login)
         loginButton.setOnClickListener {
             //Übernahme der Eingabe
@@ -60,6 +71,10 @@ class MainActivity : AppCompatActivity() {
             for (user in userList) {
                 if (username == user.username && password == user.password) {
                     currentUser = user
+                    if (currentUser.notifications.isNotEmpty()){
+                        notifications.text = currentUser.notifications[0]
+                        notifications.visibility = View.VISIBLE
+                    }
                     viewFlipper.showNext()
                 }
             }
@@ -112,6 +127,9 @@ class MainActivity : AppCompatActivity() {
 
             //Subscriber benachrichtigen
             currentStadt.notifySubs(currentStadt, userList)
+
+            notifications.text = "Bild wurde hochgeladen"
+            notifications.visibility = View.VISIBLE
         }
 
         //Bildaufruf
@@ -119,12 +137,10 @@ class MainActivity : AppCompatActivity() {
         aufrufButton.setOnClickListener {
             try {
                 //Einrichten des imageViews
-                val imageView = ImageView(this@MainActivity)
-                imageView.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                )
+
                 val linearLayout = findViewById<LinearLayout>(R.id.linear_layout)
                 linearLayout.addView(imageView)
+                imageView.visibility = View.VISIBLE
 
                 //decodieren und Anzeige des Bildes
                 val encodedImage = currentStadt.bilder[0].Bilddaten
@@ -151,8 +167,12 @@ class MainActivity : AppCompatActivity() {
         subButton.setOnClickListener {
             if (!currentStadt.subscribers.contains(currentUser.username)) {
                 currentStadt.subscribe(currentUser)
+                notifications.text = "Subscribe erfolgreich"
+                notifications.visibility = View.VISIBLE
             } else {
                 currentStadt.unsubscribe(currentUser)
+                notifications.text = "Unsubscribe erfolgreich"
+                notifications.visibility = View.VISIBLE
             }
         }
 
@@ -162,6 +182,8 @@ class MainActivity : AppCompatActivity() {
             val speicherString = Json.encodeToString(userList)
             writeToJson(speicherString, "Users.json")
             viewFlipper.showPrevious()
+            notifications.visibility = View.INVISIBLE
+            imageView.visibility = View.INVISIBLE
         }
     }
 

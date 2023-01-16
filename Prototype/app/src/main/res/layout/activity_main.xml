@@ -1,102 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
 
 
+    android:id="@+id/CoordinatedLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-<ViewFlipper
-    android:id="@+id/idViewFlipper"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:inAnimation="@android:anim/slide_in_left"
-    android:outAnimation="@android:anim/slide_out_right">
 
-    <LinearLayout
+    <ViewFlipper
+        android:id="@+id/idViewFlipper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="206dp"
-            android:orientation="vertical"></LinearLayout>
+        android:inAnimation="@android:anim/slide_in_left"
+        android:outAnimation="@android:anim/slide_out_right">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/editTextUsername"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="73dp"
-                android:ems="10"
-                android:hint="Username"
-                android:inputType="textNoSuggestions" />
+                android:layout_height="206dp"
+                android:orientation="vertical"></LinearLayout>
 
-            <EditText
-                android:id="@+id/editTextPassword"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="73dp"
-                android:ems="10"
-                android:hint="Passwort"
-                android:inputType="textPassword" />
-
-            <Button
-                android:id="@+id/login"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Button" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/aufruf"
-                android:layout_width="176dp"
-                android:layout_height="wrap_content"
-                android:text="aufruf" />
-
-            <Button
-                android:id="@+id/upload"
-                android:layout_width="176dp"
-                android:layout_height="wrap_content"
-                android:text="upload" />
-
-            <Button
-                android:id="@+id/subscribe_button"
-                android:layout_width="176dp"
-                android:layout_height="wrap_content"
-                android:text="Subscribe" />
-
-            <Button
-                android:id="@+id/logout"
-                android:layout_width="176dp"
                 android:layout_height="match_parent"
-                android:text="Logout" />
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/editTextUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="73dp"
+                    android:ems="10"
+                    android:hint="Username"
+                    android:inputType="textNoSuggestions" />
+
+                <EditText
+                    android:id="@+id/editTextPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="73dp"
+                    android:ems="10"
+                    android:hint="Passwort"
+                    android:inputType="textPassword" />
+
+                <Button
+                    android:id="@+id/login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Button" />
+            </LinearLayout>
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linear_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-</ViewFlipper>
+                <Button
+                    android:id="@+id/aufruf"
+                    android:layout_width="176dp"
+                    android:layout_height="wrap_content"
+                    android:text="aufruf" />
+
+                <Button
+                    android:id="@+id/upload"
+                    android:layout_width="176dp"
+                    android:layout_height="wrap_content"
+                    android:text="upload" />
+
+                <Button
+                    android:id="@+id/subscribe_button"
+                    android:layout_width="176dp"
+                    android:layout_height="wrap_content"
+                    android:text="Subscribe" />
+
+                <Button
+                    android:id="@+id/logout"
+                    android:layout_width="176dp"
+                    android:layout_height="match_parent"
+                    android:text="Logout" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/notificationsText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TextView" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ViewFlipper>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
