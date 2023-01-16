@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var passwordText: EditText
     lateinit var viewFlipper: ViewFlipper
     lateinit var notifications: TextView
+    lateinit var linearLayout: LinearLayout
 
     @SuppressLint("MissingInflatedId") //ID of notificationsText seemingly cannot be found
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         passwordText = findViewById(R.id.editTextPassword)
         viewFlipper = findViewById(R.id.idViewFlipper)
         notifications = findViewById(R.id.notificationsText)
+        linearLayout = findViewById(R.id.linear_layout)
         val imageView = ImageView(this@MainActivity)
         imageView.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
@@ -138,7 +140,6 @@ class MainActivity : AppCompatActivity() {
             try {
                 //Einrichten des imageViews
 
-                val linearLayout = findViewById<LinearLayout>(R.id.linear_layout)
                 linearLayout.addView(imageView)
                 imageView.visibility = View.VISIBLE
 
@@ -183,7 +184,7 @@ class MainActivity : AppCompatActivity() {
             writeToJson(speicherString, "Users.json")
             viewFlipper.showPrevious()
             notifications.visibility = View.INVISIBLE
-            imageView.visibility = View.INVISIBLE
+            linearLayout.removeView(imageView)
         }
     }
 
