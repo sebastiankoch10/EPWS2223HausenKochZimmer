@@ -1,6 +1,5 @@
 package com.example.aufrufeinesgespeichertenbildes
 
-import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -15,8 +14,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -31,12 +28,13 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,13 +44,7 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val options = FirebaseOptions.Builder()
-            .setApiKey("key")
-            .setApplicationId("id")
-            .setDatabaseUrl("https://epws2223hausenkochzimmer-default-rtdb.europe-west1.firebasedatabase.app/")
-            .build()
 
-        FirebaseApp.initializeApp(applicationContext, options, "secondApp")
 
         super.onCreate(savedInstanceState)
 
@@ -65,11 +57,11 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        binding.fab.setOnClickListener { view ->
+        binding.fab.setOnClickListener {
             //TODO()
             //TODO(Lese JSON von Device)
 
-            val permissionCheck =
+            /* val permissionCheck =
                 ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
             if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
                 // Berechtigung wurde noch nicht gewährt: Anfordern während der Laufzeit
@@ -80,69 +72,79 @@ class MainActivity : AppCompatActivity() {
                 )
             } else {
 
-                // Array mit den anzufordernden Berechtigungen
-                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+            */
+
+            // Array mit den anzufordernden Berechtigungen
+            // val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
 
 // Anfordern der Berechtigungen
-                ActivityCompat.requestPermissions(this, permissions, REQUEST_READ_EXTERNAL_STORAGE)
+            // ActivityCompat.requestPermissions(this, permissions, REQUEST_READ_EXTERNAL_STORAGE)
 
 
+            //try {
+
+            //val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+            //val fileName = "outputPic6385210105626963512.json"
+            //val file = File(filePath, fileName)
+            //val contentFile = BufferedReader(FileReader(file)).use { it.readText() }
 
 
-                try {
+          /*  val options = FirebaseOptions.Builder().setApiKey("key").setApplicationId("id")
+                .setDatabaseUrl("https://epws2223hausenkochzimmer-default-rtdb.europe-west1.firebasedatabase.app")
+                .build()
 
-                    //val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-                    //val fileName = "outputPic6385210105626963512.json"
-                    //val file = File(filePath, fileName)
-                    //val contentFile = BufferedReader(FileReader(file)).use { it.readText() }
+            FirebaseApp.initializeApp(applicationContext, options, "secondApp")
+
+           */
 
 
-                    val jsonObject = JSONObject()
-                    GlobalScope.launch {
-                        val databaseValue = async { readDatabase() }.await()
-                        jsonObject.put("jsonImage", databaseValue)
+            val jsonObject = JSONObject()
+            runBlocking {
+                val databaseValue = async { readDatabase() }.await()
+                jsonObject.put("jsonImage", databaseValue)
+            }
+
+            val imageView = ImageView(this@MainActivity)
+            imageView.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            val linearLayout = findViewById<LinearLayout>(R.id.linear_layout)
+            linearLayout.addView(imageView)
+
+
+            val encodedimage = jsonObject.getString("jsonImage")
+
+            val imageBytes = Base64.decode(encodedimage, Base64.DEFAULT)
+            val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+            imageView.setImageBitmap(bitmap)
+/*
+                    } catch (e: FileNotFoundException) {
+                        println("File not found: ${e.message}")
+                    } catch (e: IOException) {
+                        println("IO Exception: ${e.message}")
+                    } catch (e: IllegalAccessError) {
+                        println("IllegalAccessError: ${e.message}")
+                    } catch (e: IllegalAccessException) {
+                        println("IllegalAccessException: ${e.message}")
+                    } catch (e: Exception) {
+                        println("Exception: ${e.message}")
                     }
 
-                    val imageView = ImageView(this)
-                    imageView.layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                    )
-                    val linearLayout = findViewById<LinearLayout>(R.id.linear_layout)
-                    linearLayout.addView(imageView)
+ */
 
 
-                    val encodedimage = jsonObject.getString("jsonImage")
-
-                    val imageBytes = Base64.decode(encodedimage, Base64.DEFAULT)
-                    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                    imageView.setImageBitmap(bitmap)
-
-                } catch (e: FileNotFoundException) {
-                    println("File not found: ${e.message}")
-                } catch (e: IOException) {
-                    println("IO Exception: ${e.message}")
-                } catch (e: IllegalAccessError) {
-                    println("IllegalAccessError: ${e.message}")
-                } catch (e: IllegalAccessException) {
-                    println("IllegalAccessException: ${e.message}")
-                } catch (e: Exception) {
-                    println("Exception: ${e.message}")
-                }
-
-
-                //TODO(parsen des Bildes)
-                //TODO(Aus gabe als Bild)
-                //ImageView funtion
-
-            }
+            //TODO(parsen des Bildes)
+            //TODO(Aus gabe als Bild)
+            //ImageView funtion
         }
     }
+
 
     private suspend fun readDatabase(): String {
         var value: String = ""
         // Read from the database
         val dataBase = FirebaseDatabase.getInstance()
-        val myRef = dataBase.getReference("outputPic")
+        val myRef = dataBase.getReference("test")
         return suspendCancellableCoroutine { cont ->
             myRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -194,9 +196,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
@@ -211,9 +211,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     // Berechtigung wurde nicht gewährt: Benutzer benachrichtigen
                     Toast.makeText(
-                        this,
-                        "Read external storage permission denied.",
-                        Toast.LENGTH_SHORT
+                        this, "Read external storage permission denied.", Toast.LENGTH_SHORT
                     ).show()
                 }
                 return
@@ -221,6 +219,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
 
 
 
