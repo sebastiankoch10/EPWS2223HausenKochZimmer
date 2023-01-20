@@ -81,9 +81,9 @@ class MainActivity : AppCompatActivity() {
             try {
 
                 val options = FirebaseOptions.Builder()
-                    .setApiKey("<API_KEY>")
-                    .setApplicationId("<APP_ID>")
-                    .setDatabaseUrl("https://epws2223hausenkochzimmer-default-rtdb.europe-west1.firebasedatabase.app")
+                    .setApiKey("key")
+                    .setApplicationId("id")
+                    .setDatabaseUrl("https://epws2223hausenkochzimmer-default-rtdb.europe-west1.firebasedatabase.app/")
                     .build()
 
                 FirebaseApp.initializeApp(applicationContext, options, "secondApp")
