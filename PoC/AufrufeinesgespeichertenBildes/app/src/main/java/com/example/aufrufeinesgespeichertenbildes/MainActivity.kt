@@ -106,21 +106,33 @@ class MainActivity : AppCompatActivity() {
 
             myRef.setValue("Hello, World!")
 
-            // Read from the database
-            myRef.addValueEventListener(object: ValueEventListener {
+            var result = ""
 
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    // This method is called once with the initial value and again
-                    // whenever data at this location is updated.
-                    val value = snapshot.getValue<String>()
-                    Log.d(TAG, "Value is: " + value)
+            fun readFromDatabase(): String {
+                var value = ""
+                runBlocking {
+                    val deferred = async {
+                        val myRef = FirebaseDatabase.getInstance().getReference("message")
+                        myRef.addValueEventListener(object: ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                value = snapshot.getValue<String>().toString()
+                                Log.d(TAG, "Value is: $value")
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                Log.w(TAG, "Failed to read value.", error.toException())
+                            }
+                        })
+                    }
+                    deferred.await()
                 }
+                return value
+            }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Log.w(TAG, "Failed to read value.", error.toException())
-                }
+// use the function
+            result = readFromDatabase()
 
-            })
+// then use the result variable
+            println(result)
 
             myRef.setValue("Hello, World!2")
 
