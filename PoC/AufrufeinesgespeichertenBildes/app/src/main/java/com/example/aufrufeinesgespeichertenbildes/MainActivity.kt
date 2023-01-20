@@ -11,7 +11,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -29,9 +31,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
 import java.io.*
 
@@ -77,82 +80,83 @@ class MainActivity : AppCompatActivity() {
                 )
             } else {
 
-            // Array mit den anzufordernden Berechtigungen
-            val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                // Array mit den anzufordernden Berechtigungen
+                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
 
 // Anfordern der Berechtigungen
-            ActivityCompat.requestPermissions(this, permissions, REQUEST_READ_EXTERNAL_STORAGE)
+                ActivityCompat.requestPermissions(this, permissions, REQUEST_READ_EXTERNAL_STORAGE)
 
 
 
 
-            try {
+                try {
 
-                //val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-                //val fileName = "outputPic6385210105626963512.json"
-                //val file = File(filePath, fileName)
-                //val contentFile = BufferedReader(FileReader(file)).use { it.readText() }
-
-
-                val jsonObject = JSONObject()
-                jsonObject.put("jsonImage", readDatabase().toString())
+                    //val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                    //val fileName = "outputPic6385210105626963512.json"
+                    //val file = File(filePath, fileName)
+                    //val contentFile = BufferedReader(FileReader(file)).use { it.readText() }
 
 
-                val imageView = ImageView(this)
-                imageView.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                val linearLayout = findViewById<LinearLayout>(R.id.linear_layout)
-                linearLayout.addView(imageView)
+                    val jsonObject = JSONObject()
+                    GlobalScope.launch {
+                        val databaseValue = async { readDatabase() }.await()
+                        jsonObject.put("jsonImage", databaseValue)
+                    }
+
+                    val imageView = ImageView(this)
+                    imageView.layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                    val linearLayout = findViewById<LinearLayout>(R.id.linear_layout)
+                    linearLayout.addView(imageView)
 
 
-                val encodedimage = jsonObject.getString("jsonImage")
+                    val encodedimage = jsonObject.getString("jsonImage")
 
-                val imageBytes = Base64.decode(encodedimage, Base64.DEFAULT)
-                val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                imageView.setImageBitmap(bitmap)
+                    val imageBytes = Base64.decode(encodedimage, Base64.DEFAULT)
+                    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                    imageView.setImageBitmap(bitmap)
 
-            } catch (e: FileNotFoundException) {
-                println("File not found: ${e.message}")
-            } catch (e: IOException) {
-                println("IO Exception: ${e.message}")
-            }catch (e: IllegalAccessError)  {
-                println("IllegalAccessError: ${e.message}")
-            } catch (e: IllegalAccessException) {
-                println("IllegalAccessException: ${e.message}")
-            }
-            catch (e: Exception) {
-                println("Exception: ${e.message}")
-            }
+                } catch (e: FileNotFoundException) {
+                    println("File not found: ${e.message}")
+                } catch (e: IOException) {
+                    println("IO Exception: ${e.message}")
+                } catch (e: IllegalAccessError) {
+                    println("IllegalAccessError: ${e.message}")
+                } catch (e: IllegalAccessException) {
+                    println("IllegalAccessException: ${e.message}")
+                } catch (e: Exception) {
+                    println("Exception: ${e.message}")
+                }
 
 
-            //TODO(parsen des Bildes)
-            //TODO(Aus gabe als Bild)
-            //ImageView funtion
+                //TODO(parsen des Bildes)
+                //TODO(Aus gabe als Bild)
+                //ImageView funtion
 
             }
         }
     }
 
-    private fun readDatabase(): String {
-        var value : String = ""
+    private suspend fun readDatabase(): String {
+        var value: String = ""
         // Read from the database
         val dataBase = FirebaseDatabase.getInstance()
         val myRef = dataBase.getReference("outputPic")
-        myRef.addValueEventListener(object : ValueEventListener {
+        return suspendCancellableCoroutine { cont ->
+            myRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    value = snapshot.getValue(String::class.java).toString()
+                    Log.d(TAG, "Value is: $value")
+                    cont.resumeWith(Result.success(value))
+                }
 
-            override fun onDataChange(snapshot: DataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                value = snapshot.getValue(String::class.java).toString()
-                Log.d(TAG, "Value is: $value")
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.w(TAG, "Failed to read value.", error.toException())
-            }
-        })
-        return value
+                override fun onCancelled(error: DatabaseError) {
+                    Log.w(TAG, "Failed to read value.", error.toException())
+                    cont.resumeWith(Result.failure(error.toException()))
+                }
+            })
+        }
     }
 
     fun readJson(filePath: String, fileName: String): Any {
@@ -189,19 +193,28 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             REQUEST_READ_EXTERNAL_STORAGE -> {
                 // Überprüfen, ob die Berechtigung gewährt wurde
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                    val filePath =
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
                     val fileName = "outputPic6385210105626963512.json"
                     val file = File(filePath, fileName)
                     val contentFile = BufferedReader(FileReader(file)).use { it.readText() }
                 } else {
                     // Berechtigung wurde nicht gewährt: Benutzer benachrichtigen
-                    Toast.makeText(this, "Read external storage permission denied.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "Read external storage permission denied.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 return
             }
