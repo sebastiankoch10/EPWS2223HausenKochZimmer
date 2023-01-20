@@ -43,6 +43,14 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val options = FirebaseOptions.Builder()
+            .setApiKey("key")
+            .setApplicationId("id")
+            .setDatabaseUrl("https://epws2223hausenkochzimmer-default-rtdb.europe-west1.firebasedatabase.app/")
+            .build()
+
+        FirebaseApp.initializeApp(applicationContext, options, "secondApp")
+
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -80,41 +88,14 @@ class MainActivity : AppCompatActivity() {
 
             try {
 
-                val options = FirebaseOptions.Builder()
-                    .setApiKey("key")
-                    .setApplicationId("id")
-                    .setDatabaseUrl("https://epws2223hausenkochzimmer-default-rtdb.europe-west1.firebasedatabase.app/")
-                    .build()
-
-                FirebaseApp.initializeApp(applicationContext, options, "secondApp")
-
-                // Read from the database
-                val dataBase = FirebaseDatabase.getInstance()
-                val myRef = dataBase.getReference("outputPic")
-                myRef.addValueEventListener(object: ValueEventListener {
-
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        // This method is called once with the initial value and again
-                        // whenever data at this location is updated.
-                        val value = snapshot.getValue(String::class.java)
-                        Log.d(TAG, "Value is: $value")
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Log.w(TAG, "Failed to read value.", error.toException())
-                    }
-                })
-
-
-
-                val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-                val fileName = "outputPic6385210105626963512.json"
-                val file = File(filePath, fileName)
-                val contentFile = BufferedReader(FileReader(file)).use { it.readText() }
+                //val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                //val fileName = "outputPic6385210105626963512.json"
+                //val file = File(filePath, fileName)
+                //val contentFile = BufferedReader(FileReader(file)).use { it.readText() }
 
 
                 val jsonObject = JSONObject()
-                jsonObject.put("jsonImage", contentFile)
+                jsonObject.put("jsonImage", readDatabase().toString())
 
 
                 val imageView = ImageView(this)
@@ -151,6 +132,27 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    private fun readDatabase(): String {
+        var value : String = ""
+        // Read from the database
+        val dataBase = FirebaseDatabase.getInstance()
+        val myRef = dataBase.getReference("outputPic")
+        myRef.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                value = snapshot.getValue(String::class.java).toString()
+                Log.d(TAG, "Value is: $value")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(TAG, "Failed to read value.", error.toException())
+            }
+        })
+        return value
     }
 
     fun readJson(filePath: String, fileName: String): Any {
