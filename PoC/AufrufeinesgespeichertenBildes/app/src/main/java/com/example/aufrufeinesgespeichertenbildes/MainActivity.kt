@@ -38,18 +38,21 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.fab.setOnClickListener {
-            coroutineScope.launch {
-                val result = withContext(Dispatchers.IO) {
-                    val myRef = FirebaseDatabase.getInstance().getReference("message")
-                    val snapshot = myRef.awaitValue()
-                    snapshot.getValue<String>().toString()
-                }
-                val imageBytes = Base64.getDecoder().decode(result)
-                val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                val imageView = ImageView(this@MainActivity)
-                imageView.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                )
+
+            var result = ""
+
+            fun readFromDatabase() {
+                val myRef = FirebaseDatabase.getInstance().getReference("outputPic")
+                myRef.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        val result = dataSnapshot.getValue<String>()
+                        println(result)
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        // handle error
+                    }
+                })
             }
         }
     }
