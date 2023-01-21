@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             var result = ""
 
             fun readFromDatabase() {
-                val myRef = FirebaseDatabase.getInstance().getReference("message")
+                val myRef = FirebaseDatabase.getInstance().getReference("outputPic")
                 myRef.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         val result = dataSnapshot.getValue<String>()
