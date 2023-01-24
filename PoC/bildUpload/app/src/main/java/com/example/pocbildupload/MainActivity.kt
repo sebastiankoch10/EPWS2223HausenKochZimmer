@@ -52,8 +52,8 @@ class MainActivity : AppCompatActivity() {
             jsonObject.put("outputPic", encodedImage)
             //write jason or override
             //schreiben
-            writeToJson(jsonObject)
-            //writeTODatabase(encodedImage.toString())
+            //writeToJson(jsonObject)
+            writeTODatabase(encodedImage.toString())
 
             //TODO(verbesserte image lese variante)
             //https://sksamuel.github.io/scrimage/
@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         val database = Firebase.database
         val myRef = database.getReference("outputPic")
 
-        myRef.setValue("pic")
+        myRef.setValue(pic)
     }
 
     private fun convertToBase64(bitmap: Bitmap): String? {
@@ -137,6 +137,8 @@ class MainActivity : AppCompatActivity() {
 
         return File.createTempFile(fileName, ".json", storageDir)
     }
+
+
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
