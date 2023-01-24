@@ -70,13 +70,15 @@ fun readFromDatabase(myRef: DatabaseReference, activity: MainActivity) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun showPic(result : String?, activity: MainActivity) {
-    val imageBytes = Base64.getDecoder().decode(result)
-    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-    val imageView = ImageView(activity)
-    imageView.layoutParams = ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-    )
-    imageView.setImageBitmap(bitmap)
-    val linearLayout = findViewById<LinearLayout> (R.id.linear_layout)
-    linearLayout.addView(imageView)
+    if (result != null) {
+        val imageBytes = Base64.getDecoder().decode(result)
+        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+        val imageView = ImageView(activity)
+        imageView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        val linearLayout = activity.findViewById<LinearLayout>(R.id.linear_layout)
+        linearLayout.addView(imageView)
+        imageView.setImageBitmap(bitmap)
+    }
 }
