@@ -74,8 +74,7 @@ class MainActivity : AppCompatActivity() {
 
         //Erzeugt Stadtobjekt, to be replaced by loading city data from JSON
         val currentStadt = Stadt(
-            "Gummersbach", "NRW", Forum(),
-            mutableListOf(), mutableListOf(), mutableListOf()
+            "Gummersbach", "NRW", Forum(), mutableListOf(), mutableListOf(), mutableListOf()
         )
 
 
@@ -119,7 +118,6 @@ class MainActivity : AppCompatActivity() {
 
             //Zum Stadtobjekt hinzufügen
             currentStadt.addBild(currentImage)
-
 
 
             //Aktuelle Stadt abspeichern
@@ -184,8 +182,7 @@ class MainActivity : AppCompatActivity() {
     private fun readFile(view: View): Drawable? {
         val drawable = ContextCompat.getDrawable(this, R.drawable.muensterplatz_freiburg)
         val readFileString = drawable.toString()
-        Snackbar.make(view, readFileString, Snackbar.LENGTH_LONG)
-            .setAction("fehler", null).show()
+        Snackbar.make(view, readFileString, Snackbar.LENGTH_LONG).setAction("fehler", null).show()
         return drawable
     }
 
@@ -199,7 +196,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun writeToStorage(pic: Bitmap, namesOfPic : String, storageRef : StorageReference): Task<Uri> {
+    private fun writeToStorage(
+        pic: Bitmap,
+        namesOfPic: String,
+        storageRef: StorageReference
+    ): Task<Uri> {
         val imagesRef = storageRef.child("images/$namesOfPic")
 
         val stream = ByteArrayOutputStream()
@@ -209,7 +210,8 @@ class MainActivity : AppCompatActivity() {
         val uploadTask = imagesRef.putBytes(data)
         return uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
-                task.exception.let { throw  it!!
+                task.exception.let {
+                    throw  it!!
                 }
             }
             imagesRef.downloadUrl
