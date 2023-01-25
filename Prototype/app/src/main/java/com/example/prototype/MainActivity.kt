@@ -1,6 +1,7 @@
 package com.example.prototype
 
 import android.content.Context
+import com.google.gson.Gson
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -16,9 +17,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -26,12 +30,12 @@ import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.io.IOException
 
-/* TODO
-* Städteliste laden
-* currentStadt anhand User festlegen
-* Abfrage für Bild Metadaten einrichten
-* Abruf der Notifications des Nutzers
-* Userdaten abspeichern
+/*
+* TODO Städteliste laden
+* TODO currentStadt anhand User festlegen
+* TODO Abfrage für Bild Metadaten einrichten
+* TODO Abruf der Notifications des Nutzers
+* TODO Userdaten abspeichern
 * */
 
 
@@ -92,17 +96,17 @@ class MainActivity : AppCompatActivity() {
             //convert to JSON
 
             //Bild in Firebase storage speichern  ToDo name des Bildes abfragen
-            val storagereturn = writeToStorage(bitmap, "Test", storageRef)
+            val storageReturn = writeToStorage(bitmap, "Test", storageRef)
             var urlPic = ""
 
-            storagereturn.addOnSuccessListener { uri ->
+            storageReturn.addOnSuccessListener { uri ->
                 urlPic = uri.toString()
                 Log.d("MainActivity", "Image URL: $urlPic")
             }.addOnFailureListener {
                 Log.e("MainActivity", "Error getting image URL", it)
             }
 
-            //Bildobjekt erzeugen
+            //Bildobjekt erzeugen  ToDo urlPic könnte auch aus dem namen des Bildes gebildet werden
             val currentImage = Bild(
                 "Test",
                 2023,
@@ -119,10 +123,21 @@ class MainActivity : AppCompatActivity() {
             //Zum Stadtobjekt hinzufügen
             currentStadt.addBild(currentImage)
 
+            //convert Stadt zu JsonObject
+            val currentStadt = Stadt(
+                "Gummersbach", "NRW", Forum(), mutableListOf(), mutableListOf(), mutableListOf()
+            )
+            val gson = Gson()
+            val stringCity = gson.toJson(currentStadt)
+            //ToDo veraltet
+            val jsonObjectCity = JsonParser().parse(stringCity).asJsonObject
+            val cityMap: Map<String, Any?> = gson.fromJson(jsonObjectCity, object : TypeToken<Map<String, Any?>>() {}.type)
 
             //Aktuelle Stadt abspeichern
-            val speicherString = Json.encodeToString(currentStadt)
-            writeToJson(speicherString, "Städteliste.json")
+            //val speicherString = Json.encodeToString(currentStadt)
+            //writeToJson(speicherString, "Städteliste.json")
+
+            writeToDatabase(cityMap,"Test")
 
             //Subscriber benachrichtigen
             currentStadt.notifySubs(currentStadt, userList)
@@ -216,5 +231,12 @@ class MainActivity : AppCompatActivity() {
             }
             imagesRef.downloadUrl
         }
+    }
+    private fun writeToDatabase(city: Map<String,Any?>, nameCity: String) {
+
+        val database = Firebase.database
+        val myRef = database.getReference("cities/$nameCity")
+
+        myRef.setValue(city)
     }
 }
