@@ -7,12 +7,16 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -40,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         usernameText = findViewById(R.id.editTextUsername)
         passwordText = findViewById(R.id.editTextPassword)
         viewFlipper = findViewById(R.id.idViewFlipper)
+        val storageRef = Firebase.storage.reference
 
         //userListe einlesen
         val usersJson =
@@ -82,8 +87,11 @@ class MainActivity : AppCompatActivity() {
             val bitmap = (drawable as BitmapDrawable).bitmap
             //convert Base64 String
 
-            val encodedImage = convertToBase64(bitmap)
+            //val encodedImage = convertToBase64(bitmap)
             //convert to JSON
+
+            //Bild in Firebase storage speichern  ToDo name des Bildes abfragen
+            val picLink = writeToStorage(bitmap, "Test", storageRef)
 
             //Bildobjekt erzeugen
             val currentImage = Bild(
@@ -91,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                 2023,
                 "",
                 "",
-                encodedImage,
+                picLink,
                 currentUser,
                 false,
                 mutableListOf(),
@@ -101,6 +109,8 @@ class MainActivity : AppCompatActivity() {
 
             //Zum Stadtobjekt hinzufügen
             currentStadt.addBild(currentImage)
+
+
 
             //Aktuelle Stadt abspeichern
             val speicherString = Json.encodeToString(currentStadt)
@@ -185,4 +195,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun writeToStorage(pic: Bitmap, namePic : String, storageRef : StorageReference): StorageReference {
+        val imagesRef = storageRef.child("images/$namePic")
+
+        val stream = ByteArrayOutputStream()
+        pic.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        val data = stream.toByteArray()
+
+        val uploadTask = imagesRef.putBytes(data)
+        uploadTask.addOnFailureListener {
+            // handle failure
+            Log.e("MainActivity", "Error uploading image", it)
+            Toast.makeText(this, "Error uploading image", Toast.LENGTH_SHORT).show()
+
+        }.addOnSuccessListener {
+            // handle success
+            Log.d("MainActivity", "Image successfully uploaded")
+            Toast.makeText(this, "Image successfully uploaded", Toast.LENGTH_SHORT).show()
+        }
+
+        return imagesRef
+    }
 }
