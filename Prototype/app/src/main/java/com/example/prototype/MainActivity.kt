@@ -7,17 +7,24 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -238,5 +245,42 @@ class MainActivity : AppCompatActivity() {
         val myRef = database.getReference("cities/$nameCity")
 
         myRef.setValue(city)
+    }
+//ToDo einbindung von Usercontent anzeige
+    fun readFromDatabase(myRef: DatabaseReference, activity: MainActivity) {
+        val listener = object : ValueEventListener {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val result = dataSnapshot.getValue<String>()
+                showPic(result, activity)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // handle error
+                Log.e("MainActivity", "Database error: ${databaseError.message}")
+                val toast = Toast.makeText(activity, "Error reading from database", Toast.LENGTH_SHORT)
+                toast.show()
+            }
+        }
+        myRef.addValueEventListener(listener)
+    }
+//ToDo umschreiben für storage
+    fun readFromStorage(myRef: DatabaseReference, activity: MainActivity) {
+        val listner = object  : ValueEventListener {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val result = dataSnapshot.getValue<String>()
+                showPic(result, activity)
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // handle error
+                Log.e("MainActivity", "Database error: ${databaseError.message}")
+                val toast = Toast.makeText(activity, "Error reading from database", Toast.LENGTH_SHORT)
+                toast.show()
+            }
+        }
+        myRef.addValueEventListener(listner)
+
+        }
     }
 }
