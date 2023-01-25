@@ -1,4 +1,5 @@
 package com.example.prototype
+import android.net.Uri
 import com.google.firebase.storage.StorageReference
 import kotlinx.serialization.Serializable
 
@@ -8,7 +9,7 @@ class Bild(
     var jahr: Int,
     var adresse: String,
     var rechteinhaber: String,
-    val Bilddaten: StorageReference,
+    val Bilddaten: String,
     val uploader: User,
     var isVerified: Boolean = false,
     var kommentare: MutableList<String>,

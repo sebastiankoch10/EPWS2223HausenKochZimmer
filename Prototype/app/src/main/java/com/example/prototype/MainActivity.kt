@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -13,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
@@ -91,7 +93,15 @@ class MainActivity : AppCompatActivity() {
             //convert to JSON
 
             //Bild in Firebase storage speichern  ToDo name des Bildes abfragen
-            val picLink = writeToStorage(bitmap, "Test", storageRef)
+            val storagereturn = writeToStorage(bitmap, "Test", storageRef)
+            var urlPic = ""
+
+            storagereturn.addOnSuccessListener { uri ->
+                urlPic = uri.toString()
+                Log.d("MainActivity", "Image URL: $urlPic")
+            }.addOnFailureListener {
+                Log.e("MainActivity", "Error getting image URL", it)
+            }
 
             //Bildobjekt erzeugen
             val currentImage = Bild(
@@ -99,7 +109,7 @@ class MainActivity : AppCompatActivity() {
                 2023,
                 "",
                 "",
-                picLink,
+                urlPic,
                 currentUser,
                 false,
                 mutableListOf(),
@@ -189,7 +199,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun writeToStorage(pic: Bitmap, namesOfPic : String, storageRef : StorageReference): StorageReference {
+    private fun writeToStorage(pic: Bitmap, namesOfPic : String, storageRef : StorageReference): Task<Uri> {
         val imagesRef = storageRef.child("images/$namesOfPic")
 
         val stream = ByteArrayOutputStream()
@@ -197,17 +207,12 @@ class MainActivity : AppCompatActivity() {
         val data = stream.toByteArray()
 
         val uploadTask = imagesRef.putBytes(data)
-        uploadTask.addOnFailureListener {
-            // handle failure
-            Log.e("MainActivity", "Error uploading image", it)
-            Toast.makeText(this, "Error uploading image", Toast.LENGTH_SHORT).show()
-
-        }.addOnSuccessListener {
-            // handle success
-            Log.d("MainActivity", "Image successfully uploaded")
-            Toast.makeText(this, "Image successfully uploaded", Toast.LENGTH_SHORT).show()
+        return uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception.let { throw  it!!
+                }
+            }
+            imagesRef.downloadUrl
         }
-
-        return imagesRef
     }
 }
