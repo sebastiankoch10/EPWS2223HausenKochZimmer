@@ -31,9 +31,9 @@ import java.io.IOException
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var usernameText: EditText
-    lateinit var passwordText: EditText
-    lateinit var viewFlipper: ViewFlipper
+    private lateinit var usernameText: EditText
+    private lateinit var passwordText: EditText
+    private lateinit var viewFlipper: ViewFlipper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -53,8 +53,8 @@ class MainActivity : AppCompatActivity() {
         val loginButton = findViewById<Button>(R.id.login)
         loginButton.setOnClickListener {
             //Übernahme der Eingabe
-            var username = usernameText.text.toString()
-            var password = passwordText.text.toString()
+            val username = usernameText.text.toString()
+            val password = passwordText.text.toString()
 
             //Vergleich mit Userliste, setzt gefundenen User als currentUser und wechselt zum nächsten Layout
             for (user in userList) {
@@ -66,9 +66,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         //Erzeugt Stadtobjekt, to be replaced by loading city data from JSON
-        var currentStadt = Stadt(
+        val currentStadt = Stadt(
             "Gummersbach", "NRW", Forum(),
-            mutableListOf<Bild>(), mutableListOf<Geschichte>(), mutableListOf<String>()
+            mutableListOf(), mutableListOf(), mutableListOf()
         )
 
 
@@ -76,15 +76,17 @@ class MainActivity : AppCompatActivity() {
         val upladButton = findViewById<Button>(R.id.upload)
         upladButton.setOnClickListener { view ->
             //lesen
-            var drawable = readFile(view)
+            val drawable = readFile(view)
             //convert bitmap (JPG?)
-            var bitmap = (drawable as BitmapDrawable).bitmap
+
+            val bitmap = (drawable as BitmapDrawable).bitmap
             //convert Base64 String
-            var encodedImage = convertToBase64(bitmap)
+
+            val encodedImage = convertToBase64(bitmap)
             //convert to JSON
 
             //Bildobjekt erzeugen
-            var currentImage = Bild(
+            val currentImage = Bild(
                 "Test",
                 2023,
                 "",
@@ -92,8 +94,8 @@ class MainActivity : AppCompatActivity() {
                 encodedImage,
                 currentUser,
                 false,
-                mutableListOf<String>(),
-                mutableListOf<User>(),
+                mutableListOf(),
+                mutableListOf(),
                 ""
             )
 
@@ -170,8 +172,7 @@ class MainActivity : AppCompatActivity() {
     private fun convertToBase64(bitmap: Bitmap): String? {
         val outputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-        val encodedImage = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
-        return encodedImage
+        return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
     }
 
     private fun writeToJson(jsonString: String, filename: String) {
