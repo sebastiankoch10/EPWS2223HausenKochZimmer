@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
             //Zum Stadtobjekt hinzufügen
             currentStadt.addBild(currentImage)
 
-            //convert Stadt zu JsonObject
+            //convert Stadt zu JsonObject zu Map
             val currentStadt = Stadt(
                 "Gummersbach", "NRW", Forum(), mutableListOf(), mutableListOf(), mutableListOf()
             )
