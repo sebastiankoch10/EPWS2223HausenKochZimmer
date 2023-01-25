@@ -179,12 +179,6 @@ class MainActivity : AppCompatActivity() {
         return drawable
     }
 
-    private fun convertToBase64(bitmap: Bitmap): String? {
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-        return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
-    }
-
     private fun writeToJson(jsonString: String, filename: String) {
         try {
             val fOut = openFileOutput(filename, Context.MODE_PRIVATE)
@@ -195,8 +189,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun writeToStorage(pic: Bitmap, namePic : String, storageRef : StorageReference): StorageReference {
-        val imagesRef = storageRef.child("images/$namePic")
+    private fun writeToStorage(pic: Bitmap, namesOfPic : String, storageRef : StorageReference): StorageReference {
+        val imagesRef = storageRef.child("images/$namesOfPic")
 
         val stream = ByteArrayOutputStream()
         pic.compress(Bitmap.CompressFormat.JPEG, 100, stream)
