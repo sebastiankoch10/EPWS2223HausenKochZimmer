@@ -30,6 +30,9 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -97,57 +100,49 @@ class MainActivity : AppCompatActivity() {
             //convert bitmap (JPG?)
 
             val bitmap = (drawable as BitmapDrawable).bitmap
-            //convert Base64 String
 
-            //val encodedImage = convertToBase64(bitmap)
             //convert to JSON
 
             //Bild in Firebase storage speichern  ToDo name des Bildes abfragen
-            val storageReturn = writeToStorage(bitmap, "Test", storageRef)
-            var urlPic = ""
+            GlobalScope.launch {
+                val picLink = writeToStorage(bitmap, "myImage", storageRef)
 
-            storageReturn.addOnSuccessListener { uri ->
-                urlPic = uri.toString()
-                Log.d("MainActivity", "Image URL: $urlPic")
-            }.addOnFailureListener {
-                Log.e("MainActivity", "Error getting image URL", it)
+
+                //Bildobjekt erzeugen  ToDo urlPic könnte auch aus dem namen des Bildes gebildet werden
+                val currentImage = Bild(
+                    "Test",
+                    2023,
+                    "",
+                    "",
+                    picLink,
+                    currentUser,
+                    false,
+                    mutableListOf(),
+                    mutableListOf(),
+                    ""
+                )
+
+                //Zum Stadtobjekt hinzufügen
+                currentStadt.addBild(currentImage)
+
+                //convert Stadt zu JsonObject zu Map
+
+                val gson = Gson()
+                val stringCity = gson.toJson(currentStadt)
+                //ToDo veraltet
+                val jsonObjectCity = JsonParser().parse(stringCity).asJsonObject
+                val cityMap: Map<String, Any?> =
+                    gson.fromJson(jsonObjectCity, object : TypeToken<Map<String, Any?>>() {}.type)
+
+                //Aktuelle Stadt abspeichern
+                //val speicherString = Json.encodeToString(currentStadt)
+                //writeToJson(speicherString, "Städteliste.json")
+
+                writeToDatabase(cityMap, "Test")
+
+                //Subscriber benachrichtigen
+                currentStadt.notifySubs(currentStadt, userList)
             }
-
-            //Bildobjekt erzeugen  ToDo urlPic könnte auch aus dem namen des Bildes gebildet werden
-            val currentImage = Bild(
-                "Test",
-                2023,
-                "",
-                "",
-                urlPic,
-                currentUser,
-                false,
-                mutableListOf(),
-                mutableListOf(),
-                ""
-            )
-
-            //Zum Stadtobjekt hinzufügen
-            currentStadt.addBild(currentImage)
-
-            //convert Stadt zu JsonObject zu Map
-            val currentStadt = Stadt(
-                "Gummersbach", "NRW", Forum(), mutableListOf(), mutableListOf(), mutableListOf()
-            )
-            val gson = Gson()
-            val stringCity = gson.toJson(currentStadt)
-            //ToDo veraltet
-            val jsonObjectCity = JsonParser().parse(stringCity).asJsonObject
-            val cityMap: Map<String, Any?> = gson.fromJson(jsonObjectCity, object : TypeToken<Map<String, Any?>>() {}.type)
-
-            //Aktuelle Stadt abspeichern
-            //val speicherString = Json.encodeToString(currentStadt)
-            //writeToJson(speicherString, "Städteliste.json")
-
-            writeToDatabase(cityMap,"Test")
-
-            //Subscriber benachrichtigen
-            currentStadt.notifySubs(currentStadt, userList)
         }
 
         //Bildaufruf
@@ -218,27 +213,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun writeToStorage(
+    suspend fun writeToStorage(
         pic: Bitmap,
         namesOfPic: String,
         storageRef: StorageReference
-    ): Task<Uri> {
+    ): String {
         val imagesRef = storageRef.child("images/$namesOfPic")
 
         val stream = ByteArrayOutputStream()
         pic.compress(Bitmap.CompressFormat.JPEG, 100, stream)
         val data = stream.toByteArray()
-
         val uploadTask = imagesRef.putBytes(data)
-        return uploadTask.continueWithTask { task ->
+
+        val urlTask = uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
-                task.exception.let {
-                    throw  it!!
+                task.exception?.let {
+                    throw it
                 }
             }
             imagesRef.downloadUrl
         }
+        return urlTask.await().toString()
     }
+
+
     private fun writeToDatabase(city: Map<String,Any?>, nameCity: String) {
 
         val database = Firebase.database
@@ -252,7 +250,7 @@ class MainActivity : AppCompatActivity() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val result = dataSnapshot.getValue<String>()
-                showPic(result, activity)
+                //showPic(result, activity)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -270,7 +268,7 @@ class MainActivity : AppCompatActivity() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val result = dataSnapshot.getValue<String>()
-                showPic(result, activity)
+                //showPic(result, activity)
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 // handle error
@@ -283,4 +281,3 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-}
