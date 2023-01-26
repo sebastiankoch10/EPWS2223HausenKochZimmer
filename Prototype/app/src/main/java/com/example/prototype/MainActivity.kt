@@ -1,6 +1,5 @@
 package com.example.prototype
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -21,15 +20,16 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
-import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.ByteArrayOutputStream
+import java.io.StringReader
 
 /*
 * TODO Städteliste laden
@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var passwordText: EditText
     private lateinit var viewFlipper: ViewFlipper
 
+    @OptIn(DelicateCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,9 +123,12 @@ class MainActivity : AppCompatActivity() {
                 val gson = Gson()
                 val stringCity = gson.toJson(currentStadt)
                 //ToDo veraltet
-                val jsonObjectCity = JsonParser().parse(stringCity).asJsonObject
-                val cityMap: Map<String, Any?> =
-                    gson.fromJson(jsonObjectCity, object : TypeToken<Map<String, Any?>>() {}.type)
+                val jsonReader = JsonReader(StringReader(stringCity))
+                jsonReader.isLenient = true
+                val cityMap = gson.fromJson<Map<String, Any?>>(
+                    stringCity,
+                    object : TypeToken<Map<String, Any?>>() {}.type
+                )
 
                 //Aktuelle Stadt abspeichern
                 //val speicherString = Json.encodeToString(currentStadt)
@@ -156,8 +160,16 @@ class MainActivity : AppCompatActivity() {
         //Logout
         val logoutButton = findViewById<Button>(R.id.logout)
         logoutButton.setOnClickListener {
-            val speicherString = Json.encodeToString(userList)
-            writeToJson(speicherString, "Users.json")
+            val gson = Gson()
+            val stringCity = gson.toJson(currentStadt)
+            //ToDo veraltet
+            val jsonReader = JsonReader(StringReader(stringCity))
+            jsonReader.isLenient = true
+            val cityMap = gson.fromJson<Map<String, Any?>>(
+                stringCity,
+                object : TypeToken<Map<String, Any?>>() {}.type
+            )
+            writeToDatabase(cityMap, "Test")
             viewFlipper.showPrevious()
         }
     }
@@ -169,7 +181,7 @@ class MainActivity : AppCompatActivity() {
         return drawable
     }
 
-    private fun writeToJson(jsonString: String, filename: String) {
+    /*private fun writeToJson(jsonString: String, filename: String) {
         try {
             val fOut = openFileOutput(filename, Context.MODE_PRIVATE)
             fOut.write(jsonString.toByteArray())
@@ -179,7 +191,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    suspend fun writeToStorage(
+     */
+
+    private suspend fun writeToStorage(
         pic: Bitmap,
         namesOfPic: String,
     ): String {
@@ -210,13 +224,13 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun readFromDatabase(activity: MainActivity, nameCity: String) {
+    private fun readFromDatabase(activity: MainActivity, nameCity: String) {
         val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
         val listener = object : ValueEventListener {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 //val result = dataSnapshot.getValue<String>()
-                readFromStorage(this@MainActivity, "Test")
+                readFromStorage("Test")
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -232,27 +246,28 @@ class MainActivity : AppCompatActivity() {
 
     //ToDo umschreiben für storage
     @RequiresApi(Build.VERSION_CODES.O)
-    fun readFromStorage(activity: MainActivity, namesOfPic: String) {
+    fun readFromStorage(namesOfPic: String) {
         val imagesRef = FirebaseStorage.getInstance().reference.child("cities").child(namesOfPic)
 
         imagesRef.getBytes(Long.MAX_VALUE).addOnSuccessListener { bytes ->
             val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             showPic(bitmap, this)
-        }.addOnFailureListener { exception ->
+        }.addOnFailureListener {
             // Handle any errors
+            val toast =
+                Toast.makeText(this, "Error reading from Storage", Toast.LENGTH_SHORT)
+            toast.show()
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun showPic(result: Bitmap, activity: MainActivity) {
-        if (result != null) {
-            val imageView = ImageView(activity)
-            imageView.layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
-            )
-            val linearLayout = activity.findViewById<LinearLayout>(R.id.linear_layout)
-            linearLayout.addView(imageView)
-            imageView.setImageBitmap(result)
-        }
+        val imageView = ImageView(activity)
+        imageView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        val linearLayout = activity.findViewById<LinearLayout>(R.id.linear_layout)
+        linearLayout.addView(imageView)
+        imageView.setImageBitmap(result)
     }
 }
