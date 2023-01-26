@@ -1,10 +1,9 @@
 package com.example.prototype
+
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
 
 @Serializable
-class Geschichte (
+class Geschichte(
     var name: String,
     var jahr: Int,
     var author: User,
@@ -12,16 +11,16 @@ class Geschichte (
     var isVerfied: Boolean = false,
     var kommentare: MutableList<String>,
     var subscribers: MutableList<User>,
-        ){
+) {
     fun verify() {
 
     }
 
-    fun subscribe (user:User) {
+    fun subscribe(user: User) {
 
     }
 
-    fun notifySubs () {
+    fun notifySubs() {
 
     }
 }

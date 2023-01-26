@@ -1,7 +1,6 @@
 package com.example.prototype
+
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
 
 @Serializable
 class User(
@@ -11,11 +10,12 @@ class User(
     var notifications: MutableList<String>
 ) {
 
-    fun notificationStadt (absender: String) {
+    fun notificationStadt(absender: String) {
         val text = "Es gibt einen neuen Beitrag in $absender"
         notifications.add(text)
     }
-    fun removeNotification (index: Int) {
+
+    fun removeNotification(index: Int) {
         notifications.removeAt(index)
     }
 }
