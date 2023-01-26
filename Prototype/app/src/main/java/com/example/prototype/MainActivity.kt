@@ -7,7 +7,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -18,13 +17,9 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.ktx.storage
+import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
@@ -35,8 +30,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.ByteArrayOutputStream
-import java.io.FileNotFoundException
-import java.io.IOException
 
 /*
 * TODO Städteliste laden
@@ -52,13 +45,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var usernameText: EditText
     private lateinit var passwordText: EditText
     private lateinit var viewFlipper: ViewFlipper
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         usernameText = findViewById(R.id.editTextUsername)
         passwordText = findViewById(R.id.editTextPassword)
         viewFlipper = findViewById(R.id.idViewFlipper)
-        val storageRef = Firebase.storage.reference
 
         //userListe einlesen
         val usersJson =
@@ -103,7 +97,7 @@ class MainActivity : AppCompatActivity() {
 
             //Bild in Firebase storage speichern  ToDo name des Bildes abfragen
             GlobalScope.launch {
-                val picLink = writeToStorage(bitmap, "myImage", storageRef)
+                val picLink = writeToStorage(bitmap, "Test")
 
 
                 //Bildobjekt erzeugen  ToDo urlPic könnte auch aus dem namen des Bildes gebildet werden
@@ -146,33 +140,7 @@ class MainActivity : AppCompatActivity() {
         //Bildaufruf
         val aufrufButton = findViewById<Button>(R.id.aufruf)
         aufrufButton.setOnClickListener {
-            try {
-                //Einrichten des imageViews
-                val imageView = ImageView(this@MainActivity)
-                imageView.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                val linearLayout = findViewById<LinearLayout>(R.id.linear_layout)
-                linearLayout.addView(imageView)
-
-                //decodieren und Anzeige des Bildes
-                val encodedImage = currentStadt.bilder[0].Bilddaten
-                val imageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
-                val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                imageView.setImageBitmap(bitmap)
-
-                //Exceptions
-            } catch (e: FileNotFoundException) {
-                println("File not found: ${e.message}")
-            } catch (e: IOException) {
-                println("IO Exception: ${e.message}")
-            } catch (e: IllegalAccessError) {
-                println("IllegalAccessError: ${e.message}")
-            } catch (e: IllegalAccessException) {
-                println("IllegalAccessException: ${e.message}")
-            } catch (e: Exception) {
-                println("Exception: ${e.message}")
-            }
+            readFromDatabase(this, "Test")
         }
 
         //SubButton
@@ -214,9 +182,8 @@ class MainActivity : AppCompatActivity() {
     suspend fun writeToStorage(
         pic: Bitmap,
         namesOfPic: String,
-        storageRef: StorageReference
     ): String {
-        val imagesRef = storageRef.child("images/$namesOfPic")
+        val imagesRef = FirebaseStorage.getInstance().reference.child("cities").child(namesOfPic)
 
         val stream = ByteArrayOutputStream()
         pic.compress(Bitmap.CompressFormat.JPEG, 100, stream)
@@ -237,19 +204,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun writeToDatabase(city: Map<String, Any?>, nameCity: String) {
 
-        val database = Firebase.database
-        val myRef = database.getReference("cities/$nameCity")
+        val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
 
         myRef.setValue(city)
     }
 
-    //ToDo einbindung von Usercontent anzeige
-    fun readFromDatabase(myRef: DatabaseReference, activity: MainActivity) {
+
+    fun readFromDatabase(activity: MainActivity, nameCity: String) {
+        val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
         val listener = object : ValueEventListener {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val result = dataSnapshot.getValue<String>()
-                //showPic(result, activity)
+                //val result = dataSnapshot.getValue<String>()
+                readFromStorage(this@MainActivity, "Test")
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -264,23 +231,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     //ToDo umschreiben für storage
-    fun readFromStorage(myRef: DatabaseReference, activity: MainActivity) {
-        val listner = object : ValueEventListener {
-            @RequiresApi(Build.VERSION_CODES.O)
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val result = dataSnapshot.getValue<String>()
-                //showPic(result, activity)
-            }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun readFromStorage(activity: MainActivity, namesOfPic: String) {
+        val imagesRef = FirebaseStorage.getInstance().reference.child("cities").child(namesOfPic)
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                // handle error
-                Log.e("MainActivity", "Database error: ${databaseError.message}")
-                val toast =
-                    Toast.makeText(activity, "Error reading from database", Toast.LENGTH_SHORT)
-                toast.show()
-            }
+        imagesRef.getBytes(Long.MAX_VALUE).addOnSuccessListener { bytes ->
+            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            showPic(bitmap, this)
+        }.addOnFailureListener { exception ->
+            // Handle any errors
         }
-        myRef.addValueEventListener(listner)
+    }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun showPic(result: Bitmap, activity: MainActivity) {
+        if (result != null) {
+            val imageView = ImageView(activity)
+            imageView.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            val linearLayout = activity.findViewById<LinearLayout>(R.id.linear_layout)
+            linearLayout.addView(imageView)
+            imageView.setImageBitmap(result)
+        }
     }
 }
