@@ -162,7 +162,7 @@ class MainActivity : AppCompatActivity() {
         logoutButton.setOnClickListener {
             val gson = Gson()
             val stringCity = gson.toJson(currentStadt)
-            //ToDo veraltet
+            //ToDo write pic to storage
             val jsonReader = JsonReader(StringReader(stringCity))
             jsonReader.isLenient = true
             val cityMap = gson.fromJson<Map<String, Any?>>(
