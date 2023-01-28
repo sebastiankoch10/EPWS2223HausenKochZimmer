@@ -1,7 +1,8 @@
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
-import java.io.*
+import kotlinx.serialization.json.Json
+import java.io.File
+import java.io.InputStream
 
 
 @Serializable
@@ -22,7 +23,7 @@ fun main() {
     val jsonString = inputStream.bufferedReader().use { it.readText() }
 
     //creating objects from JSON string
-    val userlist : List<User> = Json.decodeFromString(jsonString)
+    val userlist: List<User> = Json.decodeFromString(jsonString)
 
     //Query
     println("Bitte Username eingeben")
@@ -33,8 +34,8 @@ fun main() {
     //check if username+password are registered
     var loggedIn = false
     for (User in userlist) {
-        if (username==User.username && passwort==User.password)
-        loggedIn = true
+        if (username == User.username && passwort == User.password)
+            loggedIn = true
     }
 
     //print login status
