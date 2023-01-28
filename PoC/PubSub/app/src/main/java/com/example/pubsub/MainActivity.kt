@@ -1,5 +1,7 @@
 package com.example.pubsub
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -30,11 +32,29 @@ class MainActivity : AppCompatActivity() {
         //PubButton
         val publishButton = findViewById<Button>(R.id.publish_button)
         publishButton.setOnClickListener {
-            // Benachrichtigung an alle Namen in Liste
-            for (name in namen) {
-                Toast.makeText(this, "Ein neuer Beitrag in Stadt XY von $name!", Toast.LENGTH_SHORT)
-                    .show()
+            if (namen.contains(name)) {
+                // Öffnet den Bilderauswahl-Dialog
+                val intent = Intent()
+                intent.type = "image/*"
+                intent.action = Intent.ACTION_GET_CONTENT
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
+            } else {
+                // Benachrichtigung an alle Namen in Liste
+                for (name in namen) {
+                    Toast.makeText(this, "Ein neuer Beitrag in Stadt XY von $name!", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null && data.data != null) {
+            // Bild wurde ausgewählt, hier kann es verarbeitet werden
+            val selectedImage = data.data
+            // Beispiel:
+            Toast.makeText(this, "Bild ausgewählt: $selectedImage", Toast.LENGTH_SHORT).show()
         }
     }
 
