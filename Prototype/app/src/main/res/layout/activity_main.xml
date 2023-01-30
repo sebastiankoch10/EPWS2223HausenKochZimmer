@@ -143,6 +143,12 @@
                 android:hint="Rechteinhaber"
                 android:inputType="textNoSuggestions" />
 
+            <Button
+                android:id="@+id/buttonFinalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hochladen" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -152,13 +158,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="190dp"
                     android:hint="Beschreibung" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/buttonFinalize"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Hochladen" />
         </LinearLayout>
 
     </ViewFlipper>
