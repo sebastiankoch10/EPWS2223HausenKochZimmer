@@ -7,7 +7,7 @@ import kotlinx.serialization.json.*
 class Stadt (
         val name: String,
         val bundesland: String,
-        var bilder: MutableList<Bild>,
+        var bilder: MutableList<String>,
         var geschichten: MutableList<Geschichte>,
         var subscribers: MutableList<String>,
         ){
@@ -29,7 +29,7 @@ class Stadt (
         }
 
         fun addBild (bild:Bild) {
-                this.bilder.add(bild)
+                this.bilder.add(bild.name)
         }
 
         fun addGeschichte (geschichte:Geschichte) {

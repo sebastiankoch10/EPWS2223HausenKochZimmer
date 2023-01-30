@@ -106,6 +106,61 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/editTextBildName"
+                android:layout_width="match_parent"
+                android:layout_height="73dp"
+                android:ems="10"
+                android:hint="Name"
+                android:inputType="textNoSuggestions" />
+
+            <EditText
+                android:id="@+id/editTextJahr"
+                android:layout_width="match_parent"
+                android:layout_height="73dp"
+                android:ems="10"
+                android:hint="Jahr"
+                android:inputType="textNoSuggestions" />
+
+            <EditText
+                android:id="@+id/editTextAddresse"
+                android:layout_width="match_parent"
+                android:layout_height="73dp"
+                android:ems="10"
+                android:hint="Addresse"
+                android:inputType="textNoSuggestions" />
+
+            <EditText
+                android:id="@+id/editTextRechteinhaber"
+                android:layout_width="match_parent"
+                android:layout_height="73dp"
+                android:ems="10"
+                android:hint="Rechteinhaber"
+                android:inputType="textNoSuggestions" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/TextInputBeschreibung"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:hint="Beschreibung" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/buttonFinalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hochladen" />
+        </LinearLayout>
+
     </ViewFlipper>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

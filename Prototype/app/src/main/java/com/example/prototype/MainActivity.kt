@@ -14,6 +14,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -22,11 +23,9 @@ import java.io.FileNotFoundException
 import java.io.IOException
 
 /* TODO
-* Städteliste laden
-* currentStadt anhand User festlegen
-* Abfrage für Bild Metadaten einrichten
-* Abruf der Notifications des Nutzers
-* Userdaten abspeichern
+Merge Branches
+Aufruf eines beliebigen Bildes in Bilderliste
+Anzeige der Bild Metadaten
 * */
 
 
@@ -37,6 +36,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewFlipper: ViewFlipper
     lateinit var notifications: TextView
     lateinit var linearLayout: LinearLayout
+    lateinit var BildnameText: EditText
+    lateinit var BildJahrText: EditText
+    lateinit var BildAdresseText: EditText
+    lateinit var BildRechteinhaberText: EditText
+    lateinit var BildBeschreibungText: TextInputEditText
 
     @SuppressLint("MissingInflatedId") //ID of notificationsText seemingly cannot be found
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +53,11 @@ class MainActivity : AppCompatActivity() {
         viewFlipper = findViewById(R.id.idViewFlipper)
         notifications = findViewById(R.id.notificationsText)
         linearLayout = findViewById(R.id.linear_layout)
+        BildnameText = findViewById(R.id.editTextBildName)
+        BildJahrText = findViewById(R.id.editTextJahr)
+        BildAdresseText = findViewById(R.id.editTextAddresse)
+        BildRechteinhaberText = findViewById(R.id.editTextRechteinhaber)
+        BildBeschreibungText = findViewById(R.id.TextInputBeschreibung)
         val imageView = ImageView(this@MainActivity)
         imageView.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
@@ -59,9 +68,10 @@ class MainActivity : AppCompatActivity() {
             applicationContext.assets.open("Users.json").bufferedReader().use { it.readText() }
         val userList: List<User> = Json.decodeFromString(usersJson)
 
-        //leeren aktuellen User & User initialisieren
+        //leeren aktuellen User & Stadt initialisieren
         var currentUser = User("", "", "", mutableListOf(),"")
         var currentStadt = Stadt("","",mutableListOf(),mutableListOf(),mutableListOf())
+        var currentBilderliste: MutableList<Bild> = mutableListOf()
 
 
         //Login
@@ -98,8 +108,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        //Einlesen der Bilderliste der Stadt anhand Stadtnamen
+        var bilderlisteJson = applicationContext.assets.open(currentStadt.name+".json").bufferedReader().use {it.readText()}
+        currentBilderliste = Json.decodeFromString(bilderlisteJson)
+
 
         //Upload
+        var encodedImage:String? = ""
         val upladButton = findViewById<Button>(R.id.upload)
         upladButton.setOnClickListener { view ->
             //lesen
@@ -107,32 +122,43 @@ class MainActivity : AppCompatActivity() {
             //convert bitmap (JPG?)
             var bitmap = (drawable as BitmapDrawable).bitmap
             //convert Base64 String
-            var encodedImage = convertToBase64(bitmap)
+            encodedImage = convertToBase64(bitmap)
             //convert to JSON
+
+            viewFlipper.showNext() }
+
+        //Bilddaten eingeben
+        val finalizeButton = findViewById<Button>(R.id.buttonFinalize)
+        finalizeButton.setOnClickListener { view ->
 
             //Bildobjekt erzeugen
             var currentImage = Bild(
-                "Test",
-                2023,
-                "",
-                "",
+                BildnameText.text.toString(),
+                BildJahrText.text.toString().toInt(),
+                BildAdresseText.text.toString(),
+                BildRechteinhaberText.text.toString(),
                 encodedImage,
                 currentUser,
                 false,
                 mutableListOf<String>(),
                 mutableListOf<User>(),
-                ""
+                BildBeschreibungText.text.toString()
             )
 
             //Zum Stadtobjekt hinzufügen
+            currentBilderliste.add(currentImage)
             currentStadt.addBild(currentImage)
 
             //Aktuelle Stadt abspeichern
-            val speicherString = Json.encodeToString(currentStadt)
+            var speicherString = Json.encodeToString(currentStadt)
             writeToJson(speicherString, "Städteliste.json")
+            speicherString = Json.encodeToString(currentBilderliste)
+            writeToJson(speicherString,currentStadt.name+".json")
 
             //Subscriber benachrichtigen
             currentStadt.notifySubs(currentStadt, userList)
+
+            viewFlipper.showPrevious()
 
             //Feedback
             notifications.text = "Bild wurde hochgeladen"
@@ -147,7 +173,7 @@ class MainActivity : AppCompatActivity() {
                 linearLayout.addView(imageView)
 
                 //decodieren und Anzeige des Bildes
-                val encodedImage = currentStadt.bilder[0].Bilddaten
+                val encodedImage = currentBilderliste[0].Bilddaten
                 val imageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
                 val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
                 imageView.setImageBitmap(bitmap)
