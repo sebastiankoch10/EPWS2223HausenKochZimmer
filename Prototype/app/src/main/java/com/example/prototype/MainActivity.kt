@@ -1,5 +1,7 @@
 package com.example.prototype
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -88,58 +90,59 @@ class MainActivity : AppCompatActivity() {
         //Upload
         val upladButton = findViewById<Button>(R.id.upload)
         upladButton.setOnClickListener { view ->
-            //lesen
-            val drawable = readFile(view)
-            //convert bitmap (JPG?)
+            val yourActivity = YourActivity()
+            yourActivity.setOnBitmapListReadyCallback(object : OnBitmapListReadyCallback {
+                override fun onBitmapListReady(bitmapList: List<Bitmap>) {
+                    GlobalScope.launch {
+                        val picLinks = ArrayList<String>()
+                        for (bitmap in bitmapList) {
+                            val picLink = writeToStorage(bitmap, "Test") // ToDo name des Bildes abfragen
+                            picLinks.add(picLink)
+                        }
 
-            val bitmap = (drawable as BitmapDrawable).bitmap
+                        //Bildobjekt erzeugen  ToDo urlPic könnte auch aus dem namen des Bildes gebildet werden
+                        val currentImage = Bild(
+                            "Test",
+                            2023,
+                            "",
+                            "",
+                            picLinks[0],
+                            currentUser,
+                            false,
+                            mutableListOf(),
+                            mutableListOf(),
+                            ""
+                        )
 
-            //convert to JSON
+                        //Zum Stadtobjekt hinzufügen
+                        currentStadt.addBild(currentImage)
 
-            //Bild in Firebase storage speichern  ToDo name des Bildes abfragen
-            GlobalScope.launch {
-                val picLink = writeToStorage(bitmap, "Test")
+                        //convert Stadt zu JsonObject zu Map
 
+                        val gson = Gson()
+                        val stringCity = gson.toJson(currentStadt)
+                        //ToDo veraltet
+                        val jsonReader = JsonReader(StringReader(stringCity))
+                        jsonReader.isLenient = true
+                        val cityMap = gson.fromJson<Map<String, Any?>>(
+                            stringCity,
+                            object : TypeToken<Map<String, Any?>>() {}.type
+                        )
 
-                //Bildobjekt erzeugen  ToDo urlPic könnte auch aus dem namen des Bildes gebildet werden
-                val currentImage = Bild(
-                    "Test",
-                    2023,
-                    "",
-                    "",
-                    picLink,
-                    currentUser,
-                    false,
-                    mutableListOf(),
-                    mutableListOf(),
-                    ""
-                )
+                        //Aktuelle Stadt abspeichern
+                        //val speicherString = Json.encodeToString(currentStadt)
+                        //writeToJson(speicherString, "Städteliste.json")
 
-                //Zum Stadtobjekt hinzufügen
-                currentStadt.addBild(currentImage)
+                        writeToDatabase(cityMap, "Test")
 
-                //convert Stadt zu JsonObject zu Map
-
-                val gson = Gson()
-                val stringCity = gson.toJson(currentStadt)
-                //ToDo veraltet
-                val jsonReader = JsonReader(StringReader(stringCity))
-                jsonReader.isLenient = true
-                val cityMap = gson.fromJson<Map<String, Any?>>(
-                    stringCity,
-                    object : TypeToken<Map<String, Any?>>() {}.type
-                )
-
-                //Aktuelle Stadt abspeichern
-                //val speicherString = Json.encodeToString(currentStadt)
-                //writeToJson(speicherString, "Städteliste.json")
-
-                writeToDatabase(cityMap, "Test")
-
-                //Subscriber benachrichtigen
-                currentStadt.notifySubs(currentStadt, userList)
-            }
+                        //Subscriber benachrichtigen
+                        currentStadt.notifySubs(currentStadt, userList)
+                    }
+                }
+            })
+            yourActivity.readPics()
         }
+
 
         //Bildaufruf
         val aufrufButton = findViewById<Button>(R.id.aufruf)
@@ -173,6 +176,80 @@ class MainActivity : AppCompatActivity() {
             viewFlipper.showPrevious()
         }
     }
+
+    //Callback Interface, um die Bilder bereitgestellt zu bekommen
+    interface OnBitmapListReadyCallback {
+        fun onBitmapListReady(bitmapList: List<Bitmap>)
+    }
+
+    //Aktivität, welche Bilder bereitstellt
+    class YourActivity: AppCompatActivity() {
+        //Callback, welcher das Interface implementiert
+        private var callback: OnBitmapListReadyCallback? = null
+
+        //Setzen des Callbacks
+        fun setOnBitmapListReadyCallback(callback: OnBitmapListReadyCallback) {
+            this.callback = callback
+        }
+
+        //Überschreiben von onActivityResult
+        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            super.onActivityResult(requestCode, resultCode, data)
+            //Wenn der RequestCode 1 ist und das Resultat OK und Daten vorliegen
+            if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
+                //ClipData abrufen
+                val clipData = data.clipData
+                //Wenn ClipData vorliegt
+                if (clipData != null) {
+                    //Anzahl der Bilder
+                    val count = clipData.itemCount
+                    //Liste der Bilder
+                    val bitmapList = ArrayList<Bitmap>()
+                    //Für alle Bilder
+                    for (i in 0 until count) {
+                        //Bild-URI abrufen
+                        val imageUri = clipData.getItemAt(i).uri
+                        //InputStream öffnen
+                        val inputStream = contentResolver.openInputStream(imageUri)
+                        //Bild dekodieren
+                        val selectedImage = BitmapFactory.decodeStream(inputStream)
+                        //Bild der Liste hinzufügen
+                        bitmapList.add(selectedImage)
+                    }
+                    //Callback aufrufen und Liste bereitstellen
+                    callback?.onBitmapListReady(bitmapList)
+                } else {
+                    //Wenn kein ClipData vorliegt, aber eine Bild-URI
+                    val selectedImageUri = data.data
+                    if (selectedImageUri != null) {
+                        //InputStream öffnen
+                        val inputStream = contentResolver.openInputStream(selectedImageUri)
+                        //Bild dekodieren
+                        val selectedImage = BitmapFactory.decodeStream(inputStream)
+                        //Callback aufrufen und Liste bereitstellen
+                        callback?.onBitmapListReady(listOf(selectedImage))
+                    }
+                }
+            }
+        }
+
+        // Die Funktion readPics startet einen neuen Bildauswahl-Intent.
+        fun readPics(){
+            // Ein neuer Intent mit Action ACTION_GET_CONTENT wird erstellt.
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            // Der Typ des Inhalts, den der Intent auswählen soll, wird auf "image/*" festgelegt.
+            intent.type = "image/*"
+            // Es wird eine extra Option hinzugefügt, die es ermöglicht, mehrere Bilder auszuwählen.
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            // Der Intent wird gestartet und es wird ein "Select Picture"-Dialog angezeigt.
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
+        }
+    }
+
+
+
+
+
 
     private fun readFile(view: View): Drawable? {
         val drawable = ContextCompat.getDrawable(this, R.drawable.muensterplatz_freiburg)
