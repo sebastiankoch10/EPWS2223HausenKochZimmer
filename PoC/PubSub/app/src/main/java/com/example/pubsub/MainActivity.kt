@@ -20,12 +20,10 @@ class MainActivity : AppCompatActivity() {
         //SubButton
         val button = findViewById<Button>(R.id.subscribe_button)
         button.setOnClickListener {
-
             if (!namen.contains(name)) { //not contains
                 addName(name)
             } else {
                 removename(name)
-                //     button.text.        //Unsubscribe
             }
         }
 
@@ -33,16 +31,13 @@ class MainActivity : AppCompatActivity() {
         val publishButton = findViewById<Button>(R.id.publish_button)
         publishButton.setOnClickListener {
             if (namen.contains(name)) {
-                // Öffnet den Bilderauswahl-Dialog
-                val intent = Intent()
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
                 intent.type = "image/*"
-                intent.action = Intent.ACTION_GET_CONTENT
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
             } else {
-                // Benachrichtigung an alle Namen in Liste
                 for (name in namen) {
-                    Toast.makeText(this, "Ein neuer Beitrag in Stadt XY von $name!", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(this, "Ein neuer Beitrag in Stadt XY von $name!", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -50,12 +45,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null && data.data != null) {
-            // Bild wurde ausgewählt, hier kann es verarbeitet werden
-            val selectedImage = data.data
-            // Beispiel:
-            Toast.makeText(this, "Bild ausgewählt: $selectedImage", Toast.LENGTH_SHORT).show()
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
+            val clipData = data.clipData
+            if (clipData != null) {
+                val count = clipData.itemCount
+                for (i in 0 until count) {
+                    val imageUri = clipData.getItemAt(i).uri
+                    Toast.makeText(this, "Bild ausgewählt: $imageUri", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                val selectedImage = data.data
+                Toast.makeText(this, "Bild ausgewählt: $selectedImage", Toast.LENGTH_SHORT).show()
+            }
         }
+    }
+
+    private fun selectMultipleImages() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        startActivityForResult(intent, 1)
     }
 
     private fun removename(name: String) {
@@ -76,4 +85,13 @@ class MainActivity : AppCompatActivity() {
         val textView = findViewById<TextView>(R.id.subscribe_button)
         textView.text = input
     }
+
+
+
+
+
 }
+
+
+
+
