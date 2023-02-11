@@ -34,7 +34,9 @@
                 android:layout_height="73dp"
                 android:ems="10"
                 android:hint="Username"
-                android:inputType="textNoSuggestions" />
+                android:inputType="textNoSuggestions"
+                android:text="Nelavar"
+                tools:text="Nelavar" />
 
             <EditText
                 android:id="@+id/editTextPassword"
@@ -42,7 +44,8 @@
                 android:layout_height="73dp"
                 android:ems="10"
                 android:hint="Passwort"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:text="12345" />
 
             <Button
                 android:id="@+id/login"
