@@ -35,7 +35,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 /* TODO
@@ -136,10 +135,11 @@ class MainActivity : AppCompatActivity() {
         upladButton.setOnClickListener { view ->
 
             //Bild einlesen
-                val intent = Intent(Intent.ACTION_GET_CONTENT)
-                intent.type = "image/*"
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*"
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
+            //convert bitmap (JPG?)
 
              bitmap = (drawable as BitmapDrawable).bitmap
 
@@ -174,14 +174,12 @@ class MainActivity : AppCompatActivity() {
                 val stringCity = Json.encodeToString(currentStadt)
                 val stringBilder = Json.encodeToString(currentBilderliste)
                 val gson = Gson()
-                //Städteliste
                 var jsonReader = JsonReader(StringReader(stringCity))
                 jsonReader.isLenient = true
                 val cityMap = gson.fromJson<Map<String, Any?>>(
                     stringCity,
                     object : TypeToken<Map<String, Any?>>() {}.type
                 )
-                //Bilderliste
                 jsonReader = JsonReader(StringReader(stringBilder))
                 jsonReader.isLenient = true
                 val BilderMap = gson.fromJson<Map<String, Any?>>(
@@ -205,7 +203,7 @@ class MainActivity : AppCompatActivity() {
         //Bildaufruf
         val aufrufButton = findViewById<Button>(R.id.aufruf)
         aufrufButton.setOnClickListener {
-            getImage(this, currentStadt.name, currentBilderliste[0].name)
+            readFromDatabase(this, currentStadt.name)
         }
 
         //SubButton
@@ -237,7 +235,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //Ergebnis der Bildauswahl
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
@@ -246,7 +243,6 @@ class MainActivity : AppCompatActivity() {
                 val count = clipData.itemCount
                 for (i in 0 until count) {
                     val imageUri = clipData.getItemAt(i).uri
-                    drawable = Drawable.createFromPath(imageUri?.path)
                     Toast.makeText(this, "Bild ausgewählt: $imageUri", Toast.LENGTH_SHORT).show()
                 }
             } else {
@@ -258,6 +254,14 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    //einlesen des Bildes als Drawable
+    private fun readFile(view: View): Drawable? {
+        val drawable = ContextCompat.getDrawable(this, R.drawable.muensterplatz_freiburg)
+        val readFileString = drawable.toString()
+        Snackbar.make(view, readFileString, Snackbar.LENGTH_LONG)
+            .setAction("fehler", null).show()
+        return drawable
+    }
 
     //Bild in DB speichern
     private suspend fun writeToStorage(
@@ -282,6 +286,13 @@ class MainActivity : AppCompatActivity() {
         return urlTask.await().toString()
     }
 
+    //enkodieren des Bildes zu String
+    private fun convertToBase64(bitmap: Bitmap): String? {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        val encodedImage = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
+        return encodedImage
+    }
 
     //speichern to Json in internem Speicher des Devices
     private fun writeToJson(jsonString: String, filename: String) {
@@ -293,28 +304,25 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
-    //Speichern der Städteliste
     private fun writeToDatabaseCity(city: Map<String, Any?>, nameCity: String) {
 
         val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
 
         myRef.setValue(city)
     }
-    //Speichern der Bilderliste
     private fun writeToDatabaseBilder(Bilder: Map<String, Any?>, nameBilder: String) {
 
         val myRef = FirebaseDatabase.getInstance().reference.child("images").child(nameBilder)
 
         myRef.setValue(Bilder)
     }
-    //Zugriff auf Database für Bild
-    private fun getImage(activity: MainActivity, nameCity: String, nameImage:String) {
+    private fun readFromDatabase(activity: MainActivity, nameCity: String) {
         val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
         val listener = object : ValueEventListener {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 //val result = dataSnapshot.getValue<String>()
-                readFromStorage(nameImage)
+                readFromStorage("Test")
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -328,7 +336,6 @@ class MainActivity : AppCompatActivity() {
         myRef.addValueEventListener(listener)
     }
     //ToDo umschreiben für storage
-    //Zugriff auf Bildstorage
     @RequiresApi(Build.VERSION_CODES.O)
     fun readFromStorage(namesOfPic: String) {
         val imagesRef = FirebaseStorage.getInstance().reference.child("cities").child(namesOfPic)
@@ -343,7 +350,6 @@ class MainActivity : AppCompatActivity() {
             toast.show()
         }
     }
-    //Anzeigen des Bildes
     @RequiresApi(Build.VERSION_CODES.O)
     fun showPic(result: Bitmap, activity: MainActivity) {
         val imageView = ImageView(activity)
