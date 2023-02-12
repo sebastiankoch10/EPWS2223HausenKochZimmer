@@ -6,11 +6,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
@@ -19,8 +22,18 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.ByteArrayOutputStream
-import java.io.FileNotFoundException
-import java.io.IOException
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.io.StringReader
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import kotlinx.coroutines.*
 
 /* TODO
 Merge Branches
@@ -114,16 +127,14 @@ class MainActivity : AppCompatActivity() {
 
 
         //Upload
-        var encodedImage:String? = ""
+        lateinit var bitmap:Bitmap
         val upladButton = findViewById<Button>(R.id.upload)
         upladButton.setOnClickListener { view ->
-            //lesen
+
+            //Bild einlesen
             var drawable = readFile(view)
             //convert bitmap (JPG?)
-            var bitmap = (drawable as BitmapDrawable).bitmap
-            //convert Base64 String
-            encodedImage = convertToBase64(bitmap)
-            //convert to JSON
+             bitmap = (drawable as BitmapDrawable).bitmap
 
             viewFlipper.showNext() }
 
@@ -131,65 +142,61 @@ class MainActivity : AppCompatActivity() {
         val finalizeButton = findViewById<Button>(R.id.buttonFinalize)
         finalizeButton.setOnClickListener { view ->
 
-            //Bildobjekt erzeugen
-            var currentImage = Bild(
-                BildnameText.text.toString(),
-                BildJahrText.text.toString().toInt(),
-                BildAdresseText.text.toString(),
-                BildRechteinhaberText.text.toString(),
-                encodedImage,
-                currentUser,
-                false,
-                mutableListOf<String>(),
-                mutableListOf<User>(),
-                BildBeschreibungText.text.toString()
-            )
+            GlobalScope.launch {
+                val picLink = writeToStorage(bitmap, BildnameText.text.toString())
 
-            //Zum Stadtobjekt hinzufügen
-            currentBilderliste.add(currentImage)
-            currentStadt.addBild(currentImage)
+                //Bildobjekt erzeugen
+                var currentImage = Bild(
+                    BildnameText.text.toString(),
+                    BildJahrText.text.toString().toInt(),
+                    BildAdresseText.text.toString(),
+                    BildRechteinhaberText.text.toString(),
+                    picLink,
+                    currentUser,
+                    false,
+                    mutableListOf<String>(),
+                    mutableListOf<User>(),
+                    BildBeschreibungText.text.toString()
+                )
 
-            //Aktuelle Stadt abspeichern
-            var speicherString = Json.encodeToString(currentStadt)
-            writeToJson(speicherString, "Städteliste.json")
-            speicherString = Json.encodeToString(currentBilderliste)
-            writeToJson(speicherString,currentStadt.name+".json")
+                //Zum Stadtobjekt hinzufügen
+                currentBilderliste.add(currentImage)
+                currentStadt.addBild(currentImage)
 
-            //Subscriber benachrichtigen
-            currentStadt.notifySubs(currentStadt, userList)
+                //Aktuelle Stadt abspeichern
+                val stringCity = Json.encodeToString(currentStadt)
+                val stringBilder = Json.encodeToString(currentBilderliste)
+                val gson = Gson()
+                var jsonReader = JsonReader(StringReader(stringCity))
+                jsonReader.isLenient = true
+                val cityMap = gson.fromJson<Map<String, Any?>>(
+                    stringCity,
+                    object : TypeToken<Map<String, Any?>>() {}.type
+                )
+                jsonReader = JsonReader(StringReader(stringBilder))
+                jsonReader.isLenient = true
+                val BilderMap = gson.fromJson<Map<String, Any?>>(
+                    stringBilder,
+                    object : TypeToken<Map<String, Any?>>() {}.type
+                )
+                writeToDatabaseCity(cityMap, currentStadt.name)
+                writeToDatabaseBilder(BilderMap, currentStadt.name)
 
-            viewFlipper.showPrevious()
+                //Subscriber benachrichtigen
+                currentStadt.notifySubs(currentStadt, userList)
 
-            //Feedback
-            notifications.text = "Bild wurde hochgeladen"
-            notifications.visibility = View.VISIBLE
+                viewFlipper.showPrevious()
+
+                //Feedback
+                notifications.text = "Bild wurde hochgeladen"
+                notifications.visibility = View.VISIBLE
+            }
         }
 
         //Bildaufruf
         val aufrufButton = findViewById<Button>(R.id.aufruf)
         aufrufButton.setOnClickListener {
-            try {
-                //imageView wird dem Layout hinzugefügt
-                linearLayout.addView(imageView)
-
-                //decodieren und Anzeige des Bildes
-                val encodedImage = currentBilderliste[0].Bilddaten
-                val imageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
-                val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                imageView.setImageBitmap(bitmap)
-
-                //Exceptions
-            } catch (e: FileNotFoundException) {
-                println("File not found: ${e.message}")
-            } catch (e: IOException) {
-                println("IO Exception: ${e.message}")
-            } catch (e: IllegalAccessError) {
-                println("IllegalAccessError: ${e.message}")
-            } catch (e: IllegalAccessException) {
-                println("IllegalAccessException: ${e.message}")
-            } catch (e: Exception) {
-                println("Exception: ${e.message}")
-            }
+            readFromDatabase(this, currentStadt.name)
         }
 
         //SubButton
@@ -230,6 +237,29 @@ class MainActivity : AppCompatActivity() {
         return drawable
     }
 
+    //Bild in DB speichern
+    private suspend fun writeToStorage(
+        pic: Bitmap,
+        namesOfPic: String,
+    ): String {
+        val imagesRef = FirebaseStorage.getInstance().reference.child("cities").child(namesOfPic)
+
+        val stream = ByteArrayOutputStream()
+        pic.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        val data = stream.toByteArray()
+        val uploadTask = imagesRef.putBytes(data)
+
+        val urlTask = uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            imagesRef.downloadUrl
+        }
+        return urlTask.await().toString()
+    }
+
     //enkodieren des Bildes zu String
     private fun convertToBase64(bitmap: Bitmap): String? {
         val outputStream = ByteArrayOutputStream()
@@ -248,5 +278,62 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
+    private fun writeToDatabaseCity(city: Map<String, Any?>, nameCity: String) {
+
+        val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
+
+        myRef.setValue(city)
+    }
+    private fun writeToDatabaseBilder(Bilder: Map<String, Any?>, nameBilder: String) {
+
+        val myRef = FirebaseDatabase.getInstance().reference.child("images").child(nameBilder)
+
+        myRef.setValue(Bilder)
+    }
+    private fun readFromDatabase(activity: MainActivity, nameCity: String) {
+        val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
+        val listener = object : ValueEventListener {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                //val result = dataSnapshot.getValue<String>()
+                readFromStorage("Test")
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // handle error
+                Log.e("MainActivity", "Database error: ${databaseError.message}")
+                val toast =
+                    Toast.makeText(activity, "Error reading from database", Toast.LENGTH_SHORT)
+                toast.show()
+            }
+        }
+        myRef.addValueEventListener(listener)
+    }
+    //ToDo umschreiben für storage
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun readFromStorage(namesOfPic: String) {
+        val imagesRef = FirebaseStorage.getInstance().reference.child("cities").child(namesOfPic)
+
+        imagesRef.getBytes(Long.MAX_VALUE).addOnSuccessListener { bytes ->
+            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            showPic(bitmap, this)
+        }.addOnFailureListener {
+            // Handle any errors
+            val toast =
+                Toast.makeText(this, "Error reading from Storage", Toast.LENGTH_SHORT)
+            toast.show()
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun showPic(result: Bitmap, activity: MainActivity) {
+        val imageView = ImageView(activity)
+        imageView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        val linearLayout = activity.findViewById<LinearLayout>(R.id.linear_layout)
+        linearLayout.addView(imageView)
+        imageView.setImageBitmap(result)
+    }
+
 
 }
