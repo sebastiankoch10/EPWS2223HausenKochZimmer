@@ -7,7 +7,8 @@ class User(
     val email: String,
     val password: String,
     val username: String,
-    var notifications: MutableList<String>
+    var notifications: MutableList<String>,
+    val heimatstadt: String
 ) {
 
     fun notificationStadt(absender: String) {
