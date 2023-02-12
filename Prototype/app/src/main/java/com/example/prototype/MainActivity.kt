@@ -56,8 +56,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var BildAdresseText: EditText
     lateinit var BildRechteinhaberText: EditText
     lateinit var BildBeschreibungText: TextInputEditText
-    lateinit var bitmap:Bitmap
-    var drawable:Drawable? = null
 
     @SuppressLint("MissingInflatedId") //ID of notificationsText seemingly cannot be found
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,6 +129,7 @@ class MainActivity : AppCompatActivity() {
 
 
         //Upload
+        lateinit var bitmap:Bitmap
         val upladButton = findViewById<Button>(R.id.upload)
         upladButton.setOnClickListener { view ->
 
@@ -140,7 +139,6 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
             //convert bitmap (JPG?)
-
              bitmap = (drawable as BitmapDrawable).bitmap
 
             viewFlipper.showNext() }
@@ -247,12 +245,12 @@ class MainActivity : AppCompatActivity() {
                 }
             } else {
                 val selectedImage = data.data
-                drawable = Drawable.createFromPath(selectedImage?.path)
+                var drawable = Drawable.createFromPath(selectedImage?.path)
                 Toast.makeText(this, "Bild ausgewählt: $selectedImage", Toast.LENGTH_SHORT).show()
+
             }
         }
     }
-
 
     //einlesen des Bildes als Drawable
     private fun readFile(view: View): Drawable? {
