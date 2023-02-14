@@ -33,7 +33,9 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 /* TODO
 Merge Branches
@@ -56,6 +58,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var BildBeschreibungText: TextInputEditText
     lateinit var staedteliste : List<Stadt>
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("MissingInflatedId") //ID of notificationsText seemingly cannot be found
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -166,7 +169,7 @@ class MainActivity : AppCompatActivity() {
 
                 //Aktuelle Stadt abspeichern TODO to Städteliste
                 val gson = Gson()
-                val stringCity = gson.toJson(staedteliste)
+                val stringCity = gson.toJson(currentStadt)
                 val stringBilder = gson.toJson(currentBilderliste)
 
                 var jsonReader = JsonReader(StringReader(stringCity))
@@ -175,30 +178,36 @@ class MainActivity : AppCompatActivity() {
                     stringCity,
                     object : TypeToken<Map<String, Any?>>() {}.type
                 )
-                jsonReader = JsonReader(StringReader(stringBilder))
+               /* jsonReader = JsonReader(StringReader(stringBilder))
                 jsonReader.isLenient = true
                 val BilderMap = gson.fromJson<Map<String, Any?>>(
                     stringBilder,
                     object : TypeToken<Map<String, Any?>>() {}.type
                 )
+
+                */
                 writeToDatabaseCity(cityMap)
-                writeToDatabaseBilder(BilderMap, currentStadt.name)
+                //writeToDatabaseBilder(BilderMap, currentStadt.name)
 
                 //Subscriber benachrichtigen
                 currentStadt.notifySubs(currentStadt, userList)
 
+                withContext(Dispatchers.Main) {
                 viewFlipper.showPrevious()
 
                 //Feedback
-                notifications.text = "Bild wurde hochgeladen"
-                notifications.visibility = View.VISIBLE
+
+                    notifications.text = "Bild wurde hochgeladen"
+                    notifications.visibility = View.VISIBLE
+                }
             }
         }
 
         //Bildaufruf
         val aufrufButton = findViewById<Button>(R.id.aufruf)
         aufrufButton.setOnClickListener {
-            readFromDatabase(this, currentStadt.name)
+            readFromStorage(currentBilderliste[0].name, currentStadt.name)
+            //readFromDatabase(this, currentStadt.name, currentBilderliste)
         }
 
         //SubButton
@@ -242,8 +251,8 @@ class MainActivity : AppCompatActivity() {
     //Bild in DB speichern
     private suspend fun writeToStorage(
         pic: Bitmap,
-        namesOfPic: String,
-        nameCity:String
+        nameCity:String,
+        namesOfPic: String
     ): String {
         val imagesRef = FirebaseStorage.getInstance().reference.child("images").child(nameCity).child(namesOfPic)
 
@@ -293,13 +302,13 @@ class MainActivity : AppCompatActivity() {
 
         myRef.setValue(Bilder)
     }
-    private fun readFromDatabase(activity: MainActivity, nameCity: String) {
+    private fun readFromDatabase(activity: MainActivity, nameCity: String, currentBilder : MutableList<Bild>) {
         val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
         val listener = object : ValueEventListener {
             @RequiresApi(Build.VERSION_CODES.O)
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {  //TODO Json String
                 //val result = dataSnapshot.getValue<String>()
-                readFromStorage("Test")
+                readFromStorage(currentBilder[0].name, nameCity) //TODO nach BilderListe
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -314,8 +323,8 @@ class MainActivity : AppCompatActivity() {
     }
     //ToDo umschreiben für storage
     @RequiresApi(Build.VERSION_CODES.O)
-    fun readFromStorage(namesOfPic: String) {
-        val imagesRef = FirebaseStorage.getInstance().reference.child("cities").child(namesOfPic)
+    fun readFromStorage(namesOfPic: String, currentStadt: String) {
+        val imagesRef = FirebaseStorage.getInstance().reference.child("images").child(currentStadt).child(namesOfPic)
 
         imagesRef.getBytes(Long.MAX_VALUE).addOnSuccessListener { bytes ->
             val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
