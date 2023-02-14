@@ -169,7 +169,7 @@ class MainActivity : AppCompatActivity() {
                 //Aktuelle Stadt abspeichern TODO to Städteliste
                 val gson = Gson()
                 val stringCity = gson.toJson(currentStadt)
-                val stringBilder = gson.toJson(currentBilderliste)
+                val stringBilder = gson.toJson(currentImage)
 
                 var jsonReader = JsonReader(StringReader(stringCity))
                 jsonReader.isLenient = true
@@ -177,16 +177,16 @@ class MainActivity : AppCompatActivity() {
                     stringCity,
                     object : TypeToken<Map<String, Any?>>() {}.type
                 )
-               /* jsonReader = JsonReader(StringReader(stringBilder)) TODO Try for each
+                jsonReader = JsonReader(StringReader(stringBilder))
                 jsonReader.isLenient = true
                 val BilderMap = gson.fromJson<Map<String, Any?>>(
                     stringBilder,
                     object : TypeToken<Map<String, Any?>>() {}.type
                 )
 
-                */
+
                 writeToDatabaseCity(cityMap)
-                //writeToDatabaseBilder(BilderMap, currentStadt.name)
+                writeToDatabaseBilder(BilderMap, currentStadt.name)
 
                 //Subscriber benachrichtigen
                 currentStadt.notifySubs(currentStadt, userList)
