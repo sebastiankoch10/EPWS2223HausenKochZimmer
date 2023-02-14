@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var BildAdresseText: EditText
     lateinit var BildRechteinhaberText: EditText
     lateinit var BildBeschreibungText: TextInputEditText
+    lateinit var staedteliste : List<Stadt>
 
     @SuppressLint("MissingInflatedId") //ID of notificationsText seemingly cannot be found
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,27 +104,27 @@ class MainActivity : AppCompatActivity() {
                         notifications.text = currentUser.notifications[0]
                         notifications.visibility = View.VISIBLE
                     }
+                    //Staedteliste einlesen
+                    val stadtJson =
+                        applicationContext.assets.open("Staedteliste.json").bufferedReader().use { it.readText() }
+                    staedteliste = Json.decodeFromString(stadtJson)
+
+                    //setze currenStadt auf heimatstadt von currentUser
+                    for (stadt in staedteliste) {
+                        if (currentUser.heimatstadt==stadt.name) {
+                            currentStadt= stadt
+                        }
+                    }
+                    //Einlesen der Bilderliste der Stadt anhand Stadtnamen
+                    var bilderlisteJson = applicationContext.assets.open(currentStadt.name+".json").bufferedReader().use {it.readText()}
+                    currentBilderliste = Json.decodeFromString(bilderlisteJson)
                     //Wechsel zum nächsten Layout
                     viewFlipper.showNext()
                 }
             }
         }
 
-        //Staedteliste einlesen
-        val stadtJson =
-            applicationContext.assets.open("Staedteliste.json").bufferedReader().use { it.readText() }
-        val staedteliste: List<Stadt> = Json.decodeFromString(stadtJson)
 
-        //setze currenStadt auf heimatstadt von currentUser
-        for (stadt in staedteliste) {
-            if (currentUser.heimatstadt==stadt.name) {
-                currentStadt= stadt
-            }
-        }
-
-        //Einlesen der Bilderliste der Stadt anhand Stadtnamen
-        var bilderlisteJson = applicationContext.assets.open(currentStadt.name+".json").bufferedReader().use {it.readText()}
-        currentBilderliste = Json.decodeFromString(bilderlisteJson)
 
 
         //Upload
@@ -147,8 +148,8 @@ class MainActivity : AppCompatActivity() {
 
                 //Bildobjekt erzeugen
                 var currentImage = Bild(
-                    BildnameText.text.toString(),
-                    BildJahrText.text.toString().toInt(),
+                    BildnameText.text.toString(),  //TODO required DB
+                    BildJahrText.text.toString().toInt(), //TODO null save
                     BildAdresseText.text.toString(),
                     BildRechteinhaberText.text.toString(),
                     picLink,
@@ -163,10 +164,11 @@ class MainActivity : AppCompatActivity() {
                 currentBilderliste.add(currentImage)
                 currentStadt.addBild(currentImage)
 
-                //Aktuelle Stadt abspeichern
-                val stringCity = Json.encodeToString(staedteliste)
-                val stringBilder = Json.encodeToString(currentBilderliste)
+                //Aktuelle Stadt abspeichern TODO to Städteliste
                 val gson = Gson()
+                val stringCity = gson.toJson(staedteliste)
+                val stringBilder = gson.toJson(currentBilderliste)
+
                 var jsonReader = JsonReader(StringReader(stringCity))
                 jsonReader.isLenient = true
                 val cityMap = gson.fromJson<Map<String, Any?>>(
