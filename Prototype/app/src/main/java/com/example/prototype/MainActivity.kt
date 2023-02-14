@@ -107,8 +107,7 @@ class MainActivity : AppCompatActivity() {
                         notifications.visibility = View.VISIBLE
                     }
                     //Staedteliste einlesen  //TODO Call DB Namen
-                    val stadtJson =
-                        applicationContext.assets.open("Staedteliste.json").bufferedReader().use { it.readText() }
+                    val stadtJson = readFromDatabaseCity()
                     staedteliste = Json.decodeFromString(stadtJson)
 
                     //setze currenStadt auf heimatstadt von currentUser
@@ -118,7 +117,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     //Einlesen der Bilderliste der Stadt anhand Stadtnamen //TODO Call DB Objekte
-                    var bilderlisteJson = applicationContext.assets.open(currentStadt.name+".json").bufferedReader().use {it.readText()}
+                    var bilderlisteJson = readfromDatabaseBilder(currentStadt.name)
                     currentBilderliste = Json.decodeFromString(bilderlisteJson)
                     //Wechsel zum nächsten Layout
                     viewFlipper.showNext()
@@ -186,7 +185,7 @@ class MainActivity : AppCompatActivity() {
 
 
                 writeToDatabaseCity(cityMap)
-                writeToDatabaseBilder(BilderMap, currentStadt.name)
+                writeToDatabaseBilder(BilderMap, currentStadt.name, currentImage.name)
 
                 //Subscriber benachrichtigen
                 currentStadt.notifySubs(currentStadt, userList)
@@ -295,13 +294,13 @@ class MainActivity : AppCompatActivity() {
 
         myRef.setValue(city)
     }
-    private fun writeToDatabaseBilder(Bilder: Map<String, Any?>, nameBilder: String) {
+    private fun writeToDatabaseBilder(Bilder: Map<String, Any?>, nameStadt: String, nameBild) {
 
-        val myRef = FirebaseDatabase.getInstance().reference.child("images").child(nameBilder)
+        val myRef = FirebaseDatabase.getInstance().reference.child("images").child(nameStadt).child(nameBild)
 
         myRef.setValue(Bilder)
     }
-    private fun readFromDatabase(activity: MainActivity, nameCity: String, currentBilder : MutableList<Bild>) {
+    /* private fun readFromDatabase(activity: MainActivity, nameCity: String, currentBilder : MutableList<Bild>) {
         val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
         val listener = object : ValueEventListener {
             @RequiresApi(Build.VERSION_CODES.O)
@@ -319,7 +318,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
         myRef.addValueEventListener(listener)
+    } */
+    private fun readFromDatabaseCity() :String {
+        val myRef = FirebaseDatabase.getInstance().reference.child("cities")
+        //TODO alle Children von cities in einen String packen und returnen
+        val Jsonstring:String
+
+        return Jsonstring //Jsonstring mit allen Stadtobjekten
     }
+
+    private fun readfromDatabaseBilder(city: String) : String {
+        val myRef = FirebaseDatabase.getInstance().reference.child("images").child(city)
+        //TODO alle Children von der Stadt unter "images" in einen String packen und returnen
+        val Jsonstring:String
+        return Jsonstring //Jsonstring mit allen Bildobjekten der Stadt
+    }
+
     //ToDo umschreiben für storage
     @RequiresApi(Build.VERSION_CODES.O)
     fun readFromStorage(namesOfPic: String, currentStadt: String) {
