@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
         finalizeButton.setOnClickListener { view ->
 
             GlobalScope.launch {
-                val picLink = writeToStorage(bitmap, BildnameText.text.toString())
+                val picLink = writeToStorage(bitmap,currentStadt.name, BildnameText.text.toString())
 
                 //Bildobjekt erzeugen
                 var currentImage = Bild(
@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity() {
                 currentStadt.addBild(currentImage)
 
                 //Aktuelle Stadt abspeichern
-                val stringCity = Json.encodeToString(currentStadt)
+                val stringCity = Json.encodeToString(staedteliste)
                 val stringBilder = Json.encodeToString(currentBilderliste)
                 val gson = Gson()
                 var jsonReader = JsonReader(StringReader(stringCity))
@@ -179,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                     stringBilder,
                     object : TypeToken<Map<String, Any?>>() {}.type
                 )
-                writeToDatabaseCity(cityMap, currentStadt.name)
+                writeToDatabaseCity(cityMap)
                 writeToDatabaseBilder(BilderMap, currentStadt.name)
 
                 //Subscriber benachrichtigen
@@ -241,8 +241,9 @@ class MainActivity : AppCompatActivity() {
     private suspend fun writeToStorage(
         pic: Bitmap,
         namesOfPic: String,
+        nameCity:String
     ): String {
-        val imagesRef = FirebaseStorage.getInstance().reference.child("cities").child(namesOfPic)
+        val imagesRef = FirebaseStorage.getInstance().reference.child("images").child(nameCity).child(namesOfPic)
 
         val stream = ByteArrayOutputStream()
         pic.compress(Bitmap.CompressFormat.JPEG, 100, stream)
@@ -278,9 +279,9 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
-    private fun writeToDatabaseCity(city: Map<String, Any?>, nameCity: String) {
+    private fun writeToDatabaseCity(city: Map<String, Any?>) {
 
-        val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
+        val myRef = FirebaseDatabase.getInstance().reference.child("cities")
 
         myRef.setValue(city)
     }
@@ -330,7 +331,6 @@ class MainActivity : AppCompatActivity() {
         imageView.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
-        val linearLayout = activity.findViewById<LinearLayout>(R.id.linear_layout)
         linearLayout.addView(imageView)
         imageView.setImageBitmap(result)
     }
