@@ -7,14 +7,12 @@ class Forum {
 
     @Serializable
     data class Forumpost(
-        val text: String,
-        val author: User
+        val text: String, val author: User
     )
 
     @Serializable
     data class Thread(
-        val posts: MutableList<Forumpost>,
-        val op: User
+        val posts: MutableList<Forumpost>, val op: User
     )
 
     val threads: MutableList<Thread> = mutableListOf()

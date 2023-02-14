@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -18,30 +17,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.io.ByteArrayOutputStream
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.io.StringReader
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.ByteArrayOutputStream
+import java.io.StringReader
 
 
 //TODO Aufruf eines beliebigen Bildes in Bilderliste
-
-
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -55,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var BildAdresseText: EditText
     lateinit var BildRechteinhaberText: EditText
     lateinit var BildBeschreibungText: TextInputEditText
-    lateinit var staedteliste : List<Stadt>
+    lateinit var staedteliste: List<Stadt>
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("MissingInflatedId") //ID of notificationsText seemingly cannot be found
@@ -85,8 +78,8 @@ class MainActivity : AppCompatActivity() {
         val userList: List<User> = Json.decodeFromString(usersJson)
 
         //leeren aktuellen User & Stadt initialisieren
-        var currentUser = User("", "", "", mutableListOf(),"")
-        var currentStadt = Stadt("","",mutableListOf(),mutableListOf(),mutableListOf())
+        var currentUser = User("", "", "", mutableListOf(), "")
+        var currentStadt = Stadt("", "", mutableListOf(), mutableListOf(), mutableListOf())
         var currentBilderliste: MutableList<Bild> = mutableListOf()
 
 
@@ -102,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                 if (username == user.username && password == user.password) {
                     currentUser = user
                     //falls notifications vorhanden, zeige Erste
-                    if (currentUser.notifications.isNotEmpty()){
+                    if (currentUser.notifications.isNotEmpty()) {
                         notifications.text = currentUser.notifications[0]
                         notifications.visibility = View.VISIBLE
                     }
@@ -112,8 +105,8 @@ class MainActivity : AppCompatActivity() {
 
                     //setze currenStadt auf heimatstadt von currentUser
                     for (stadt in staedteliste) {
-                        if (currentUser.heimatstadt==stadt.name) {
-                            currentStadt= stadt
+                        if (currentUser.heimatstadt == stadt.name) {
+                            currentStadt = stadt
                         }
                     }
                     //Einlesen der Bilderliste der Stadt anhand Stadtnamen //TODO Call DB Objekte
@@ -126,26 +119,26 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
-
         //Upload
-        lateinit var bitmap:Bitmap
+        lateinit var bitmap: Bitmap
         val upladButton = findViewById<Button>(R.id.upload)
         upladButton.setOnClickListener { view ->
 
             //Bild einlesen
             var drawable = readFile(view)
             //convert bitmap (JPG?)
-             bitmap = (drawable as BitmapDrawable).bitmap
+            bitmap = (drawable as BitmapDrawable).bitmap
 
-            viewFlipper.showNext() }
+            viewFlipper.showNext()
+        }
 
         //Bilddaten eingeben
         val finalizeButton = findViewById<Button>(R.id.buttonFinalize)
         finalizeButton.setOnClickListener { view ->
 
             GlobalScope.launch {
-                val picLink = writeToStorage(bitmap,currentStadt.name, BildnameText.text.toString())
+                val picLink =
+                    writeToStorage(bitmap, currentStadt.name, BildnameText.text.toString())
 
                 //Bildobjekt erzeugen
                 var currentImage = Bild(
@@ -191,9 +184,9 @@ class MainActivity : AppCompatActivity() {
                 currentStadt.notifySubs(currentStadt, userList)
 
                 withContext(Dispatchers.Main) {
-                viewFlipper.showPrevious()
+                    viewFlipper.showPrevious()
 
-                //Feedback
+                    //Feedback
 
                     notifications.text = "Bild wurde hochgeladen"
                     notifications.visibility = View.VISIBLE
@@ -249,10 +242,11 @@ class MainActivity : AppCompatActivity() {
     //Bild in DB speichern
     private suspend fun writeToStorage(
         pic: Bitmap,
-        nameCity:String,
+        nameCity: String,
         namesOfPic: String
     ): String {
-        val imagesRef = FirebaseStorage.getInstance().reference.child("images").child(nameCity).child(namesOfPic)
+        val imagesRef = FirebaseStorage.getInstance().reference.child("images").child(nameCity)
+            .child(namesOfPic)
 
         val stream = ByteArrayOutputStream()
         pic.compress(Bitmap.CompressFormat.JPEG, 100, stream)
@@ -288,18 +282,22 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
+
     private fun writeToDatabaseCity(city: Map<String, Any?>) {
 
         val myRef = FirebaseDatabase.getInstance().reference.child("cities")
 
         myRef.setValue(city)
     }
+
     private fun writeToDatabaseBilder(Bilder: Map<String, Any?>, nameStadt: String, nameBild) {
 
-        val myRef = FirebaseDatabase.getInstance().reference.child("images").child(nameStadt).child(nameBild)
+        val myRef = FirebaseDatabase.getInstance().reference.child("images").child(nameStadt)
+            .child(nameBild)
 
         myRef.setValue(Bilder)
     }
+
     /* private fun readFromDatabase(activity: MainActivity, nameCity: String, currentBilder : MutableList<Bild>) {
         val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
         val listener = object : ValueEventListener {
@@ -319,25 +317,26 @@ class MainActivity : AppCompatActivity() {
         }
         myRef.addValueEventListener(listener)
     } */
-    private fun readFromDatabaseCity() :String {
+    private fun readFromDatabaseCity(): String {
         val myRef = FirebaseDatabase.getInstance().reference.child("cities")
         //TODO alle Children von cities in einen String packen und returnen
-        val Jsonstring:String
+        val Jsonstring: String
 
         return Jsonstring //Jsonstring mit allen Stadtobjekten
     }
 
-    private fun readfromDatabaseBilder(city: String) : String {
+    private fun readfromDatabaseBilder(city: String): String {
         val myRef = FirebaseDatabase.getInstance().reference.child("images").child(city)
         //TODO alle Children von der Stadt unter "images" in einen String packen und returnen
-        val Jsonstring:String
+        val Jsonstring: String
         return Jsonstring //Jsonstring mit allen Bildobjekten der Stadt
     }
 
     //ToDo umschreiben für storage
     @RequiresApi(Build.VERSION_CODES.O)
     fun readFromStorage(namesOfPic: String, currentStadt: String) {
-        val imagesRef = FirebaseStorage.getInstance().reference.child("images").child(currentStadt).child(namesOfPic)
+        val imagesRef = FirebaseStorage.getInstance().reference.child("images").child(currentStadt)
+            .child(namesOfPic)
 
 
         imagesRef.getBytes(Long.MAX_VALUE).addOnSuccessListener { bytes ->
@@ -350,6 +349,7 @@ class MainActivity : AppCompatActivity() {
             toast.show()
         }
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun showPic(result: Bitmap, activity: MainActivity) {
         val imageView = ImageView(activity)
