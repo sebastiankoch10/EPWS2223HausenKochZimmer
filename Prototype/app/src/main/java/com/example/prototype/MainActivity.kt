@@ -37,11 +37,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-/* TODO
-Merge Branches
-Aufruf eines beliebigen Bildes in Bilderliste
-Anzeige der Bild Metadaten
-* */
+
+//TODO Aufruf eines beliebigen Bildes in Bilderliste
+
+
 
 
 
@@ -107,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                         notifications.text = currentUser.notifications[0]
                         notifications.visibility = View.VISIBLE
                     }
-                    //Staedteliste einlesen
+                    //Staedteliste einlesen  //TODO Call DB Namen
                     val stadtJson =
                         applicationContext.assets.open("Staedteliste.json").bufferedReader().use { it.readText() }
                     staedteliste = Json.decodeFromString(stadtJson)
@@ -118,7 +117,7 @@ class MainActivity : AppCompatActivity() {
                             currentStadt= stadt
                         }
                     }
-                    //Einlesen der Bilderliste der Stadt anhand Stadtnamen
+                    //Einlesen der Bilderliste der Stadt anhand Stadtnamen //TODO Call DB Objekte
                     var bilderlisteJson = applicationContext.assets.open(currentStadt.name+".json").bufferedReader().use {it.readText()}
                     currentBilderliste = Json.decodeFromString(bilderlisteJson)
                     //Wechsel zum nächsten Layout
@@ -178,7 +177,7 @@ class MainActivity : AppCompatActivity() {
                     stringCity,
                     object : TypeToken<Map<String, Any?>>() {}.type
                 )
-               /* jsonReader = JsonReader(StringReader(stringBilder))
+               /* jsonReader = JsonReader(StringReader(stringBilder)) TODO Try for each
                 jsonReader.isLenient = true
                 val BilderMap = gson.fromJson<Map<String, Any?>>(
                     stringBilder,
@@ -325,6 +324,7 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun readFromStorage(namesOfPic: String, currentStadt: String) {
         val imagesRef = FirebaseStorage.getInstance().reference.child("images").child(currentStadt).child(namesOfPic)
+
 
         imagesRef.getBytes(Long.MAX_VALUE).addOnSuccessListener { bytes ->
             val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
