@@ -306,25 +306,6 @@ class MainActivity : AppCompatActivity() {
         myRef.setValue(Bilder)
     }
 
-    /* private fun readFromDatabase(activity: MainActivity, nameCity: String, currentBilder : MutableList<Bild>) {
-        val myRef = FirebaseDatabase.getInstance().reference.child("cities").child(nameCity)
-        val listener = object : ValueEventListener {
-            @RequiresApi(Build.VERSION_CODES.O)
-            override fun onDataChange(dataSnapshot: DataSnapshot) {  //TODO Json String
-                //val result = dataSnapshot.getValue<String>()
-                readFromStorage(currentBilder[0].name, nameCity) //TODO nach BilderListe
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // handle error
-                Log.e("MainActivity", "Database error: ${databaseError.message}")
-                val toast =
-                    Toast.makeText(activity, "Error reading from database", Toast.LENGTH_SHORT)
-                toast.show()
-            }
-        }
-        myRef.addValueEventListener(listener)
-    } */
 
     private fun readFromDatabase(myRef: DatabaseReference): String {
         val jsonList = mutableListOf<String>()
@@ -361,7 +342,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    //ToDo umschreiben für storage
     @RequiresApi(Build.VERSION_CODES.O)
     fun readFromStorage(namesOfPic: String, currentStadt: String) {
         val imagesRef = FirebaseStorage.getInstance().reference.child("images").child(currentStadt)
