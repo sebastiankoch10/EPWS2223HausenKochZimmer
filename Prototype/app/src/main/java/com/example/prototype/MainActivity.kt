@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity() {
                     writeToStorage(bitmap, currentStadt.name, BildnameText.text.toString())
                 }
 
-               
+
                 //Bildobjekt erzeugen
                 val currentImage = Bild(
                     BildnameText.text.toString(),
@@ -296,7 +296,7 @@ class MainActivity : AppCompatActivity() {
         myRef.setValue(city)
     }
 
-    private fun writeToDatabaseBilder(Bilder: Map<String, Any?>, nameStadt: String, nameBild) {
+    private fun writeToDatabaseBilder(Bilder: Map<String, Any?>, nameStadt: String, nameBild : String) {
 
         val myRef = FirebaseDatabase.getInstance().reference.child("images").child(nameStadt)
             .child(nameBild)
