@@ -22,11 +22,8 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -50,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var BildBeschreibungText: TextInputEditText
     lateinit var staedteliste: List<Stadt>
 
+    @OptIn(DelicateCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("MissingInflatedId") //ID of notificationsText seemingly cannot be found
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,9 +97,10 @@ class MainActivity : AppCompatActivity() {
                         notifications.text = currentUser.notifications[0]
                         notifications.visibility = View.VISIBLE
                     }
-                    //Staedteliste einlesen  //TODO Call DB Namen
+                    //Staedteliste einlesen
                     val stadtJson = readFromDatabaseCity()
                     staedteliste = Json.decodeFromString(stadtJson)
+
 
                     //setze currenStadt auf heimatstadt von currentUser
                     for (stadt in staedteliste) {
@@ -109,7 +108,7 @@ class MainActivity : AppCompatActivity() {
                             currentStadt = stadt
                         }
                     }
-                    //Einlesen der Bilderliste der Stadt anhand Stadtnamen //TODO Call DB Objekte
+                    //Einlesen der Bilderliste der Stadt anhand Stadtnamen
                     var bilderlisteJson = readfromDatabaseBilder(currentStadt.name)
                     currentBilderliste = Json.decodeFromString(bilderlisteJson)
                     //Wechsel zum nächsten Layout
@@ -137,13 +136,19 @@ class MainActivity : AppCompatActivity() {
         finalizeButton.setOnClickListener { view ->
 
             GlobalScope.launch {
-                val picLink =
+                var counter = 1  //TODO auch für ander Routin oder Alte Datenstände richtig?
+                val picLink: String = if (BildnameText.text.isNullOrBlank()) {
+                    counter++
+                    writeToStorage(bitmap, currentStadt.name, "Bild$counter")
+                } else {
                     writeToStorage(bitmap, currentStadt.name, BildnameText.text.toString())
+                }
 
+               
                 //Bildobjekt erzeugen
-                var currentImage = Bild(
-                    BildnameText.text.toString(),  //TODO required DB
-                    BildJahrText.text.toString().toInt(), //TODO null save
+                val currentImage = Bild(
+                    BildnameText.text.toString(),
+                    BildJahrText.text.toString().toIntOrNull() ?: 0,
                     BildAdresseText.text.toString(),
                     BildRechteinhaberText.text.toString(),
                     picLink,
@@ -153,6 +158,7 @@ class MainActivity : AppCompatActivity() {
                     mutableListOf<User>(),
                     BildBeschreibungText.text.toString()
                 )
+
 
                 //Zum Stadtobjekt hinzufügen
                 currentBilderliste.add(currentImage)
