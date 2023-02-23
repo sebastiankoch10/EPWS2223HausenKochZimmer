@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var BildAdresseText: EditText
     lateinit var BildRechteinhaberText: EditText
     lateinit var BildBeschreibungText: TextInputEditText
-    lateinit var staedteliste: List<Stadt>
+    var staedteliste: List<Stadt> = emptyList()
 
     @OptIn(DelicateCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.O)
@@ -98,9 +98,22 @@ class MainActivity : AppCompatActivity() {
                         notifications.visibility = View.VISIBLE
                     }
                     //Staedteliste einlesen
+                    /*val stadtJsonLocal =
+                        applicationContext.assets.open("Staedteliste.json").bufferedReader().use { it.readText() }
+                    val myRefCitiesLocal = FirebaseDatabase.getInstance().reference.child("cities")
+                    myRefCitiesLocal.setValue(stadtJsonLocal)
+
+                     */
+
+
+
                     val myRefCities = FirebaseDatabase.getInstance().reference.child("cities")
-                    val stadtJson = readFromDatabase(myRefCities)
-                    staedteliste = Json.decodeFromString(stadtJson)
+
+                    runBlocking {
+                        val stadtJson = async { readFromDatabase(myRefCities){staedteliste} }.await()
+                        staedteliste = Json.decodeFromString(stadtJson.toString())
+                    }
+
 
 
                     //setze currenStadt auf heimatstadt von currentUser
@@ -110,9 +123,10 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     //Einlesen der Bilderliste der Stadt anhand Stadtnamen
-                    val myRefImage  = FirebaseDatabase.getInstance().reference.child("images").child(currentStadt.name)
-                    var bilderlisteJson = readFromDatabase(myRefImage)
-                    currentBilderliste = Json.decodeFromString(bilderlisteJson)
+                    val myRefImage = FirebaseDatabase.getInstance().reference.child("images").child(currentStadt.name)
+                    readFromDatabase(myRefImage) { bilderlisteJson ->
+                        currentBilderliste = Json.decodeFromString(bilderlisteJson)
+                    }
                     //Wechsel zum nächsten Layout
                     viewFlipper.showNext()
                 }
@@ -307,39 +321,25 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun readFromDatabase(myRef: DatabaseReference): String {
+    private fun readFromDatabase(myRef: DatabaseReference, callback: (String) -> Unit) {
         val jsonList = mutableListOf<String>()
 
-        myRef.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                // JSON-String des hinzugefügten Objekts erhalten und zur Liste hinzufügen
-                val json = snapshot.value.toString()
-                jsonList.add(json)
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                // Hier können Sie entsprechend auf Änderungen reagieren, wenn nötig
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                // Hier können Sie entsprechend auf Löschungen reagieren, wenn nötig
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                // Hier können Sie entsprechend auf Änderungen der Sortierreihenfolge reagieren, wenn nötig
+        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (childSnapshot in snapshot.children) {
+                    val json = childSnapshot.value.toString()
+                    jsonList.add(json)
+                }
+                val jsonString = "[${jsonList.joinToString(",")}]"
+                callback(jsonString)
             }
 
             override fun onCancelled(error: DatabaseError) {
                 // Hier können Sie auf Fehler reagieren, wenn nötig
             }
         })
-
-        // Warten, bis alle Elemente gelesen wurden
-        Thread.sleep(1000)
-
-        // Die JSON-Liste in einen JSON-String umwandeln und zurückgeben
-        return "[${jsonList.joinToString(",")}]"
     }
+
 
 
     @RequiresApi(Build.VERSION_CODES.O)
