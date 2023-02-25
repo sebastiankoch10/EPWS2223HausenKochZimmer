@@ -79,10 +79,17 @@ class MainActivity : AppCompatActivity() {
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
         )
 
+
+
         //userListe einlesen
+        val userList : List<User> = userDataLoad()
+
+        /*val myrefUser = FirebaseDatabase.getInstance().reference.child("user")
         val usersJson =
             applicationContext.assets.open("Users.json").bufferedReader().use { it.readText() }
         val userList: List<User> = Json.decodeFromString(usersJson)
+
+         */
 
         //leeren aktuellen User & Stadt initialisieren
         var currentUser = User("", "", "", mutableListOf(),"")
@@ -236,6 +243,36 @@ class MainActivity : AppCompatActivity() {
             notifications.visibility = View.INVISIBLE
             linearLayout.removeView(imageView)
         }
+    }
+
+    suspend fun userDataLoad(): List<User> {
+
+        val userList = mutableListOf<User>()
+        val myRefUser = FirebaseDatabase.getInstance().reference.child("user")
+
+        myRefUser.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (userSnapshot in snapshot.children) {
+                        val user = userSnapshot.getValue(User::class.java)
+                        if (user != null) {
+                            userList.add(user)
+                        }
+                    }
+                } else {
+                    // Wenn keine Daten im Firebase-Verweis vorhanden sind, Daten aus der JSON-Datei lesen
+                    val usersJson =
+                        applicationContext.assets.open("Users.json").bufferedReader().use { it.readText() }
+                    userList.addAll(Json.decodeFromString(usersJson))
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("TAG", "Fehler beim Lesen der Daten aus der Firebase-Datenbank: ${error.message}")
+            }
+        })
+
+        return userList
     }
 
     //einlesen des Bildes als Drawable
