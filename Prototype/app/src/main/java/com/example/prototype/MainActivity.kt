@@ -27,6 +27,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.w3c.dom.Text
 import java.io.ByteArrayOutputStream
 import java.io.StringReader
 
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var BildAdresseText2: EditText
     lateinit var BildRechteinhaberText2: EditText
     lateinit var BildBeschreibungText2: TextInputEditText
+    lateinit var changeCityText: EditText
     var staedteliste: List<Stadt> = emptyList()
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -75,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         BildAdresseText2 = findViewById(R.id.editTextAddresse2)
         BildRechteinhaberText2 = findViewById(R.id.editTextRechteinhaber2)
         BildBeschreibungText2 = findViewById(R.id.textInputBeschreibung2)
+        changeCityText = findViewById(R.id.changeCity)
         val imageView = ImageView(this@MainActivity)
         imageView.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
@@ -147,6 +150,8 @@ class MainActivity : AppCompatActivity() {
                     }
                     //Wechsel zum nächsten Layout
                     viewFlipper.setDisplayedChild(1)
+                    val currentCity = findViewById<TextView>(R.id.textCurrentStadt)
+                    currentCity.text = currentStadt.name
                 }
             }
         }
@@ -320,6 +325,21 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val changeCityButton = findViewById<Button>(R.id.buttonChangeCity)
+        changeCityButton.setOnClickListener {
+            for (stadt in staedteliste) {
+                if (changeCityText.text.toString() == stadt.name) {
+                    currentStadt = stadt
+                    val myRefImage = FirebaseDatabase.getInstance().reference.child("images").child(currentStadt.name)
+                    readFromDatabase(myRefImage) { bilderlisteJson ->
+                        currentBilderliste = Json.decodeFromString(bilderlisteJson)
+                    }
+                    val currentCity = findViewById<TextView>(R.id.textCurrentStadt)
+                    currentCity.text = currentStadt.name
+                }
+            }
+        }
+
         //Logout
         val logoutButton = findViewById<Button>(R.id.logout)
         logoutButton.setOnClickListener {
@@ -328,7 +348,7 @@ class MainActivity : AppCompatActivity() {
             writeToJson(speicherString, "Users.json")
 
             //Rückkehr auf Login Layout
-            viewFlipper.showPrevious()
+            viewFlipper.setDisplayedChild(0)
             //Remove/Hide temporary Views
             notifications.visibility = View.INVISIBLE
 

@@ -62,6 +62,11 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/textCurrentStadt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -104,6 +109,34 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="TextView" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/changeCity"
+                        android:layout_width="match_parent"
+                        android:layout_height="73dp"
+                        android:ems="10"
+                        android:hint="Stadt"
+                        android:inputType="textNoSuggestions" />
+
+                    <Button
+                        android:id="@+id/buttonChangeCity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Button" />
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
@@ -218,13 +251,13 @@
                 android:id="@+id/BildBack"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="Zurück" />
 
             <Button
                 android:id="@+id/BildEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="Bearbeiten" />
 
             <LinearLayout
                 android:id="@+id/LayoutImage"
@@ -276,7 +309,7 @@
                 android:id="@+id/buttonFinalize2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hochladen" />
+                android:text="Bearbeiten" />
 
             <LinearLayout
                 android:layout_width="match_parent"
