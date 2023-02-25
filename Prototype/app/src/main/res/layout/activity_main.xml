@@ -109,7 +109,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/LayoutEdit"
+            android:id="@+id/LayoutUpload"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -167,20 +167,129 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/LayoutImage"
+            android:id="@+id/LayoutAufruf"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/BildName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <TextView
+                android:id="@+id/BildJahr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <TextView
+                android:id="@+id/BildAdresse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <TextView
+                android:id="@+id/BildRechteinhaber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <TextView
+                android:id="@+id/BildUploader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <TextView
+                android:id="@+id/BildIsVerified"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <TextView
+                android:id="@+id/BildBeschreibung"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <Button
+                android:id="@+id/BildBack"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Button" />
+
+            <Button
+                android:id="@+id/BildEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Button" />
+
             <LinearLayout
+                android:id="@+id/LayoutImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"></LinearLayout>
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/LayoutEdit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/editTextBildName2"
+                android:layout_width="match_parent"
+                android:layout_height="73dp"
+                android:ems="10"
+                android:hint="Name"
+                android:inputType="textNoSuggestions" />
+
+            <EditText
+                android:id="@+id/editTextJahr2"
+                android:layout_width="match_parent"
+                android:layout_height="73dp"
+                android:ems="10"
+                android:hint="Jahr"
+                android:inputType="textNoSuggestions" />
+
+            <EditText
+                android:id="@+id/editTextAddresse2"
+                android:layout_width="match_parent"
+                android:layout_height="73dp"
+                android:ems="10"
+                android:hint="Addresse"
+                android:inputType="textNoSuggestions" />
+
+            <EditText
+                android:id="@+id/editTextRechteinhaber2"
+                android:layout_width="match_parent"
+                android:layout_height="73dp"
+                android:ems="10"
+                android:hint="Rechteinhaber"
+                android:inputType="textNoSuggestions" />
+
+            <Button
+                android:id="@+id/buttonFinalize2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hochladen" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputBeschreibung2"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:hint="Beschreibung" />
+            </LinearLayout>
+
         </LinearLayout>
 
     </ViewFlipper>

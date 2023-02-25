@@ -39,12 +39,17 @@ class MainActivity : AppCompatActivity() {
     lateinit var passwordText: EditText
     lateinit var viewFlipper: ViewFlipper
     lateinit var notifications: TextView
-    lateinit var linearLayout: LinearLayout
+    lateinit var layoutImage: LinearLayout
     lateinit var BildnameText: EditText
     lateinit var BildJahrText: EditText
     lateinit var BildAdresseText: EditText
     lateinit var BildRechteinhaberText: EditText
     lateinit var BildBeschreibungText: TextInputEditText
+    lateinit var BildnameText2: EditText
+    lateinit var BildJahrText2: EditText
+    lateinit var BildAdresseText2: EditText
+    lateinit var BildRechteinhaberText2: EditText
+    lateinit var BildBeschreibungText2: TextInputEditText
     var staedteliste: List<Stadt> = emptyList()
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -59,16 +64,29 @@ class MainActivity : AppCompatActivity() {
         passwordText = findViewById(R.id.editTextPassword)
         viewFlipper = findViewById(R.id.idViewFlipper)
         notifications = findViewById(R.id.notificationsText)
-        linearLayout = findViewById(R.id.linear_layout)
+        layoutImage = findViewById(R.id.LayoutImage)
         BildnameText = findViewById(R.id.editTextBildName)
         BildJahrText = findViewById(R.id.editTextJahr)
         BildAdresseText = findViewById(R.id.editTextAddresse)
-        BildRechteinhaberText = findViewById(R.id.editTextRechteinhaber)
-        BildBeschreibungText = findViewById(R.id.TextInputBeschreibung)
+        BildRechteinhaberText = findViewById(R.id.editTextRechteinhaber2)
+        BildBeschreibungText = findViewById(R.id.textInputBeschreibung2)
+        BildnameText2 = findViewById(R.id.editTextBildName2)
+        BildJahrText2 = findViewById(R.id.editTextJahr2)
+        BildAdresseText2 = findViewById(R.id.editTextAddresse2)
+        BildRechteinhaberText2 = findViewById(R.id.editTextRechteinhaber2)
+        BildBeschreibungText2 = findViewById(R.id.textInputBeschreibung2)
         val imageView = ImageView(this@MainActivity)
         imageView.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
         )
+
+        /*Viewflipper IDs:
+        Login = 0
+        Home = 1
+        Upload = 2
+        Aufruf = 3
+        Edit = 4
+         */
 
         //userListe einlesen
         val usersJson =
@@ -128,7 +146,7 @@ class MainActivity : AppCompatActivity() {
                         currentBilderliste = Json.decodeFromString(bilderlisteJson)
                     }
                     //Wechsel zum nächsten Layout
-                    viewFlipper.showNext()
+                    viewFlipper.setDisplayedChild(1)
                 }
             }
         }
@@ -144,7 +162,7 @@ class MainActivity : AppCompatActivity() {
             //convert bitmap (JPG?)
             bitmap = (drawable as BitmapDrawable).bitmap
 
-            viewFlipper.showNext()
+            viewFlipper.setDisplayedChild(2)
         }
 
         //Bilddaten eingeben
@@ -206,7 +224,7 @@ class MainActivity : AppCompatActivity() {
                 currentStadt.notifySubs(currentStadt, userList)
 
                 withContext(Dispatchers.Main) {
-                    viewFlipper.showPrevious()
+                    viewFlipper.setDisplayedChild(1)
 
                     //Feedback
 
@@ -217,10 +235,75 @@ class MainActivity : AppCompatActivity() {
         }
 
         //Bildaufruf
+        //TODO work with a selected Image
         val aufrufButton = findViewById<Button>(R.id.aufruf)
         aufrufButton.setOnClickListener {
+            viewFlipper.setDisplayedChild(3)
+            var name = findViewById<TextView>(R.id.BildName)
+            var jahr = findViewById<TextView>(R.id.BildJahr)
+            var adresse = findViewById<TextView>(R.id.BildAdresse)
+            var rechteinhaber = findViewById<TextView>(R.id.BildRechteinhaber)
+            var uploader = findViewById<TextView>(R.id.BildUploader)
+            var beschreibung = findViewById<TextView>(R.id.BildBeschreibung)
+            var verified = findViewById<TextView>(R.id.BildIsVerified)
+            name.text = currentBilderliste[0].name
+            jahr.text = currentBilderliste[0].jahr.toString()
+            adresse.text = currentBilderliste[0].adresse
+            rechteinhaber.text = currentBilderliste[0].rechteinhaber
+            uploader.text = currentBilderliste[0].uploader.username
+            beschreibung.text = currentBilderliste[0].beschreibung
+            verified.text = currentBilderliste[0].isVerified.toString()
             readFromStorage(currentBilderliste[0].name, currentStadt.name)
             //readFromDatabase(this, currentStadt.name, currentBilderliste)
+        }
+
+        //Flip back to Home
+        val backButton = findViewById<Button>(R.id.BildBack)
+        backButton.setOnClickListener {
+            viewFlipper.setDisplayedChild(1)
+            layoutImage.removeView(imageView)
+        }
+
+        //Flip to Edit View
+        val editButton = findViewById<Button>(R.id.BildEdit)
+        editButton.setOnClickListener {
+            viewFlipper.setDisplayedChild(4)
+
+        }
+
+        //Finalize for Edit
+        //TODO work with a selected Image
+        val finalizeButton2 = findViewById<Button>(R.id.buttonFinalize2)
+        finalizeButton2.setOnClickListener {
+            if (BildnameText2.text.toString() != "") {
+                currentBilderliste[0].name = BildnameText2.text.toString()
+            }
+            if (BildJahrText2.text.toString() != "") {
+                currentBilderliste[0].jahr = BildJahrText2.text.toString().toIntOrNull() ?:0
+            }
+            if (BildAdresseText2.text.toString() != "") {
+                currentBilderliste[0].adresse = BildAdresseText2.text.toString()
+            }
+            if (BildRechteinhaberText2.text.toString() != "") {
+                currentBilderliste[0].rechteinhaber = BildRechteinhaberText2.text.toString()
+            }
+            if (BildBeschreibungText2.text.toString() != "") {
+                currentBilderliste[0].beschreibung = BildBeschreibungText2.text.toString()
+            }
+            val gson = Gson()
+            val stringBilder = gson.toJson(currentBilderliste[0])
+            var jsonReader = JsonReader(StringReader(stringBilder))
+            jsonReader.isLenient = true
+            val BilderMap = gson.fromJson<Map<String, Any?>>(
+                stringBilder,
+                object : TypeToken<Map<String, Any?>>() {}.type
+            )
+            writeToDatabaseBilder(BilderMap, currentStadt.name, currentBilderliste[0].name)
+            viewFlipper.setDisplayedChild(1)
+
+            notifications.text = "Bild wurde bearbeitet"
+            notifications.visibility = View.VISIBLE
+
         }
 
         //SubButton
@@ -248,7 +331,7 @@ class MainActivity : AppCompatActivity() {
             viewFlipper.showPrevious()
             //Remove/Hide temporary Views
             notifications.visibility = View.INVISIBLE
-            linearLayout.removeView(imageView)
+
         }
     }
 
@@ -365,7 +448,7 @@ class MainActivity : AppCompatActivity() {
         imageView.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
-        linearLayout.addView(imageView)
+        layoutImage.addView(imageView)
         imageView.setImageBitmap(result)
     }
 
