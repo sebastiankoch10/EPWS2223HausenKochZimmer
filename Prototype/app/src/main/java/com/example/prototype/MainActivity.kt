@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Base64
 import android.util.Log
 import android.view.View
@@ -22,8 +23,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.ByteArrayOutputStream
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.io.StringReader
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -33,9 +32,8 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 
 
 //TODO Aufruf eines beliebigen Bildes in Bilderliste
@@ -129,6 +127,10 @@ class MainActivity : AppCompatActivity() {
                     //Wechsel zum nächsten Layout
                     viewFlipper.showNext()
                 }
+            }
+            if (currentUser.notifications.isEmpty()){
+                notifications.text = currentStadt.name
+                notifications.visibility = View.VISIBLE
             }
         }
 
