@@ -1,7 +1,9 @@
 package com.example.prototype
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -53,6 +55,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var BildBeschreibungText2: TextInputEditText
     lateinit var changeCityText: EditText
     var staedteliste: List<Stadt> = emptyList()
+    var drawable:Drawable? = null
 
     @OptIn(DelicateCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.O)
@@ -161,9 +164,13 @@ class MainActivity : AppCompatActivity() {
         lateinit var bitmap: Bitmap
         val upladButton = findViewById<Button>(R.id.upload)
         upladButton.setOnClickListener { view ->
-
-            //Bild einlesen
-            var drawable = readFile(view)
+            runBlocking {
+                //Bild einlesen
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "image/*"
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
+            }
             //convert bitmap (JPG?)
             bitmap = (drawable as BitmapDrawable).bitmap
 
@@ -472,5 +479,24 @@ class MainActivity : AppCompatActivity() {
         imageView.setImageBitmap(result)
     }
 
+    //Ergebnis der Bildauswahl
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
+            val clipData = data.clipData
+            if (clipData != null) {
+                val count = clipData.itemCount
+                for (i in 0 until count) {
+                    val imageUri = clipData.getItemAt(i).uri
+                    drawable = Drawable.createFromPath(imageUri?.path)
+                    Toast.makeText(this, "Bild ausgewählt: $imageUri", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                val selectedImage = data.data
+                drawable = Drawable.createFromPath(selectedImage?.path)
+                Toast.makeText(this, "Bild ausgewählt: $selectedImage", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
 }
