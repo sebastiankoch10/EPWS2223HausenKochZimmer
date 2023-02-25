@@ -82,14 +82,13 @@ class MainActivity : AppCompatActivity() {
 
 
         //userListe einlesen
-        val userList : List<User> = userDataLoad()
+        //val userList : List<User> = userDataLoad()
 
-        /*val myrefUser = FirebaseDatabase.getInstance().reference.child("user")
+
         val usersJson =
             applicationContext.assets.open("Users.json").bufferedReader().use { it.readText() }
         val userList: List<User> = Json.decodeFromString(usersJson)
 
-         */
 
         //leeren aktuellen User & Stadt initialisieren
         var currentUser = User("", "", "", mutableListOf(),"")
