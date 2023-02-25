@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             for (user in userList) {
                 if (username == user.username && password == user.password) {
                     currentUser = user
-                    //falls notifications vorhanden, zeige Erste
+                    //falls notifications vorhanden, zeige Erste TODO notifications sind nicht am currentuser sondern an der current
                     if (currentUser.notifications.isNotEmpty()){
                         notifications.text = currentUser.notifications[0]
                         notifications.visibility = View.VISIBLE
