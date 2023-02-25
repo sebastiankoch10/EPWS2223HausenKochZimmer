@@ -213,6 +213,9 @@ class MainActivity : AppCompatActivity() {
         aufrufButton.setOnClickListener {
             readFromStorage(currentBilderliste[0].name, currentStadt.name)
             //readFromDatabase(this, currentStadt.name, currentBilderliste)
+            notifications.text = "Name: ${currentBilderliste[0].name}\nAdresse: ${currentBilderliste[0].adresse}\nJahr: ${currentBilderliste[0].jahr}\nUploader: ${currentBilderliste[0].uploader.username}\nBeschreibung: ${currentBilderliste[0].beschreibung}\n" +
+                    "Rechteinhaber: ${currentBilderliste[0].rechteinhaber}"
+            notifications.visibility = View.VISIBLE
         }
 
         //SubButton
